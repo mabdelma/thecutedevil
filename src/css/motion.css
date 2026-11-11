@@ -1,0 +1,85 @@
+/* The Cute Devil: motion states. Hidden start states exist ONLY under html.motion
+   (added by app.js when motion is allowed). Without it everything is simply visible. */
+
+/* Before app.js has decided: hold reveal targets back for a moment so they do not flash.
+   If JS never arrives they show themselves after 3s. */
+@media (prefers-reduced-motion: no-preference) {
+  html.js:not(.motion):not(.motion-off) :is([data-reveal], [data-split], [data-stagger] > *) { animation: tcd-hold 3s steps(1, end) both; }
+}
+@keyframes tcd-hold { from { opacity: 0; } to { opacity: 1; } }
+
+html.motion [data-reveal]:not(.is-in),
+html.motion [data-stagger]:not(.is-in) > * { opacity: 0; }
+html.motion [data-reveal='clip']:not(.is-in) { clip-path: inset(0 0 100% 0); }
+html.motion [data-split]:not(.is-split) { visibility: hidden; }
+
+/* ---------- split text ---------- */
+.c-split__w { display: inline-block; clip-path: inset(-0.15em -0.6em -0.2em -0.6em); }
+.c-split__i, .c-split__c { display: inline-block; will-change: transform; }
+
+/* ---------- marquee ---------- */
+[data-marquee] { display: flex; overflow: hidden; white-space: nowrap; }
+.c-marquee__track { display: flex; flex: none; }
+html.motion .c-marquee__track { will-change: transform; }
+.c-marquee__group { display: flex; flex: none; align-items: center; gap: var(--marquee-gap, 2rem); padding-inline-end: var(--marquee-gap, 2rem); }
+html:not(.motion) [data-marquee] { flex-wrap: wrap; white-space: normal; }
+html:not(.motion) .c-marquee__track, html:not(.motion) .c-marquee__group { flex-wrap: wrap; flex: 0 1 auto; }
+
+/* ---------- tilt / magnetic ---------- */
+html.motion [data-tilt]:hover, html.motion [data-magnetic]:hover { will-change: transform; }
+
+/* ---------- signature: the devil shadow ----------
+   Every [data-devil] casts a hard accent shadow. --dx/--dy are a unit vector (in px) pointing
+   away from the pointer, written by motion.js; --dk is the distance and grows on hover/focus.
+   Tunables: --devil-rest (6), --devil-max (16), --devil-c (shadow colour), --devil-horn (horn width). */
+:where([data-devil]) { position: relative; }
+[data-devil] {
+  --dx: 0.7px; --dy: -0.7px; --dk: var(--devil-rest, 6);
+  box-shadow: calc(var(--dx) * var(--dk)) calc(var(--dy) * var(--dk)) 0 0 var(--devil-c, var(--c-accent));
+  transition: --dk 0.4s var(--ease), border-color var(--dur) var(--ease), background-color var(--dur-fast), color var(--dur-fast);
+}
+[data-devil]:hover, [data-devil]:focus-visible, [data-devil]:focus-within, [data-devil].is-devil-on { --dk: var(--devil-max, 16); }
+.c-btn[data-devil] { --devil-rest: 4; --devil-max: 9; --devil-horn: 2.75rem; }
+.c-horns {
+  position: absolute; inset-block-end: calc(100% - 1px); inset-inline-start: 50%;
+  inline-size: var(--devil-horn, 4rem); margin-inline-start: calc(var(--devil-horn, 4rem) / -2);
+  color: var(--devil-c, var(--c-accent)); pointer-events: none;
+  translate: calc(var(--dx) * var(--dk)) calc(var(--dy) * var(--dk));
+  scale: 1 0; transform-origin: 50% 100%; transition: scale 0.45s var(--ease);
+}
+.c-horns svg { display: block; inline-size: 100%; block-size: auto; fill: currentColor; }
+[data-devil]:hover > .c-horns, [data-devil]:focus-visible > .c-horns, [data-devil]:focus-within > .c-horns, [data-devil].is-devil-on > .c-horns { scale: 1 1; }
+[data-devil].is-devil-down > .c-horns { scale: 1 0; }
+
+/* ---------- decorative cursor follower (never replaces the native cursor) ---------- */
+.c-cursor { position: fixed; inset-block-start: 0; left: 0; z-index: var(--z-cursor); pointer-events: none; opacity: 0; transition: opacity 0.3s; }
+.c-cursor.is-on { opacity: 1; }
+.c-cursor.is-hide { opacity: 0; }
+.c-cursor__dot { position: absolute; top: 0; left: 0; inline-size: 6px; block-size: 6px; margin: -3px; border-radius: 50%; background: var(--c-accent); transition: opacity 0.2s; }
+.c-cursor__ring { position: absolute; top: 0; left: 0; inline-size: 36px; block-size: 36px; margin: -18px; display: grid; place-items: center; }
+.c-cursor__shape { position: absolute; inset: 0; border: 1.5px solid rgb(var(--c-text-rgb) / 0.75); border-radius: 50%; transition: scale 0.35s var(--ease), background-color 0.25s, border-color 0.25s; }
+.c-cursor__horns { position: absolute; inset-inline: 3px; inset-block-end: calc(100% - 5px); fill: var(--c-accent); scale: 1 0; transform-origin: 50% 100%; transition: scale 0.35s var(--ease); }
+.c-cursor__label { position: relative; font-family: var(--font-display); font-weight: 600; font-size: 0.6875rem; text-transform: lowercase; color: var(--c-on-contrast); opacity: 0; transition: opacity 0.2s; }
+.c-cursor.is-link .c-cursor__shape { scale: 1.45; border-color: var(--c-contrast); }
+.c-cursor.is-link .c-cursor__horns { scale: 1 1; }
+.c-cursor.is-view .c-cursor__shape, .c-cursor.is-drag .c-cursor__shape { scale: 2.1; background: var(--c-contrast); border-color: var(--c-contrast); }
+.c-cursor.is-view .c-cursor__horns, .c-cursor.is-drag .c-cursor__horns { scale: 1 1; }
+.c-cursor.is-view .c-cursor__label, .c-cursor.is-drag .c-cursor__label { opacity: 1; }
+.c-cursor.is-view .c-cursor__dot, .c-cursor.is-drag .c-cursor__dot, .c-cursor.is-text .c-cursor__dot { opacity: 0; }
+.c-cursor.is-text .c-cursor__shape { scale: 0.4; }
+.c-cursor.is-down .c-cursor__shape { scale: 0.8; }
+.c-cursor.is-link.is-down .c-cursor__shape { scale: 1.2; }
+
+/* ---------- page transition: accent wipe ---------- */
+.c-wipe { position: fixed; inset: 0; z-index: var(--z-wipe); background: var(--c-accent); pointer-events: none; transform: scaleY(0); transform-origin: 50% 100%; }
+.c-wipe::before { content: ''; position: absolute; inset-inline: 0; inset-block-start: 0; block-size: 0.75rem; background: var(--c-contrast); }
+.c-wipe.is-in { transform: scaleY(1); transition: transform 0.45s var(--ease-in-out); pointer-events: auto; }
+.c-wipe.is-covering { transform: scaleY(1); }
+.c-wipe.is-out { transform: scaleY(0); transform-origin: 50% 0; transition: transform 0.6s var(--ease-in-out); }
+.c-wipe.is-out::before { inset-block: auto 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .c-wipe, .c-cursor { display: none !important; }
+  [data-devil], .c-horns { transition-duration: 0.01s; }
+  .c-sheet, .c-sheet__link { transition-duration: 0.01s !important; transition-delay: 0s !important; }
+}

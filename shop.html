@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en" class="no-js" data-theme="cream">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shop · The Cute Devil</title>
+<meta name="description" content="Wear, scent and tech from The Cute Devil. Pick what you like, add it to your bag and order on WhatsApp. Sample prices, nothing is charged here.">
+<link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
+<script>(function(d){d.classList.remove('no-js');d.classList.add('js');try{var t=localStorage.getItem('tcd:theme');if(t)d.setAttribute('data-theme',t)}catch(e){}})(document.documentElement)</script>
+<link rel="stylesheet" href="./src/css/tokens.css">
+<link rel="stylesheet" href="./src/css/base.css">
+<link rel="stylesheet" href="./src/css/motion.css">
+<link rel="stylesheet" href="./src/css/shop.css">
+</head>
+<body data-page="shop">
+<a class="u-skip" href="#main">Skip to content</a>
+<header data-shell="header"><a href="index.html">the cute devil</a> <a href="shop.html">shop</a></header>
+<main id="main">
+  <section class="c-pagehead s-shophead" aria-labelledby="shop-title">
+    <div class="c-container c-container--wide s-shophead__inner">
+      <p class="c-eyebrow" data-reveal="fade">the shop</p>
+      <h1 class="s-shophead__title" id="shop-title" data-split="words">pick your <span class="u-accent">secret.</span></h1>
+      <p class="c-lede" data-reveal="up" data-delay="0.25">Wear, scent and tech. Each piece looks innocent at first. Look twice.</p>
+    </div>
+  </section>
+
+  <div class="s-band" data-marquee="36" aria-hidden="true">
+    <span class="s-band__item">wear</span>
+    <span class="s-band__item">scent</span>
+    <span class="s-band__item">tech</span>
+    <span class="s-band__item">sample prices</span>
+    <span class="s-band__item">order on whatsapp</span>
+    <span class="s-band__item">nothing is charged here</span>
+  </div>
+
+  <div class="s-filter">
+    <div class="c-container c-container--wide s-filter__inner">
+      <nav class="s-filter__nav" aria-label="Filter the shop by niche">
+        <ul class="s-filter__chips" data-filter>
+          <li><a class="c-chip" href="shop.html" data-niche="all" aria-current="true">all <span class="c-chip__count" data-count="all"></span></a></li>
+          <li><a class="c-chip" href="shop.html?niche=wear" data-niche="wear">wear <span class="c-chip__count" data-count="wear"></span></a></li>
+          <li><a class="c-chip" href="shop.html?niche=scent" data-niche="scent">scent <span class="c-chip__count" data-count="scent"></span></a></li>
+          <li><a class="c-chip" href="shop.html?niche=tech" data-niche="tech">tech <span class="c-chip__count" data-count="tech"></span></a></li>
+        </ul>
+      </nav>
+      <p class="s-filter__status" data-filter-status role="status" aria-live="polite"></p>
+    </div>
+  </div>
+
+  <section class="s-catalogue" aria-labelledby="shop-line">
+    <div class="c-container c-container--wide">
+      <div class="s-catalogue__line">
+        <h2 id="shop-line" data-shop-line>everything. so far.</h2>
+        <p class="u-muted u-small"><span class="c-badge c-badge--sample">Sample</span> prices are placeholders for now.</p>
+      </div>
+
+      <div class="c-grid c-grid--products s-grid" data-shop-grid data-stagger="0.05"></div>
+
+      <noscript>
+        <div class="s-noscript">
+          <h2 class="u-h3">the shop needs JavaScript to show the bag.</h2>
+          <p class="u-muted">You can still order. Tell us on WhatsApp what you are looking for (wear, scent or tech) and a real person will answer.</p>
+          <a class="c-btn c-btn--primary" href="https://wa.me/34622209935?text=Hi%20The%20Cute%20Devil!%20I%27d%20like%20to%20order." target="_blank" rel="noopener">order on whatsapp</a>
+        </div>
+      </noscript>
+
+      <aside class="s-note" data-reveal="up" aria-labelledby="shop-how">
+        <div class="u-stack" style="--stack: var(--space-2)">
+          <h2 class="u-h3" id="shop-how">pick. add. whatsapp. done.</h2>
+          <p>No account and no card. Your bag turns into a WhatsApp message, and we confirm price, stock and delivery in the chat.</p>
+        </div>
+        <a class="c-btn c-btn--ghost" href="contact.html">ask us anything</a>
+      </aside>
+    </div>
+  </section>
+</main>
+<footer data-shell="footer"></footer>
+<script type="module" src="./src/js/app.js"></script>
+<script type="module" src="./src/js/pages/shop.js"></script>
+</body>
+</html>

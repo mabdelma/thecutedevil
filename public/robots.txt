@@ -1,0 +1,6 @@
+# The Cute Devil
+User-agent: *
+Allow: /
+
+# Add the sitemap line once the final domain is known, for example:
+# Sitemap: https://YOUR-DOMAIN/sitemap.xml

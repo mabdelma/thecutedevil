@@ -1,0 +1,15 @@
+{
+  "name": "The Cute Devil",
+  "short_name": "Cute Devil",
+  "description": "Charming outside. Mysterious inside. Wear, scent and tech from The Cute Devil.",
+  "lang": "en",
+  "dir": "ltr",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "browser",
+  "theme_color": "#FFF4E6",
+  "background_color": "#FFF4E6",
+  "icons": [
+    { "src": "img/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
