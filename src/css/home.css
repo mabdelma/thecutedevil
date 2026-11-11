@@ -187,7 +187,6 @@ html.motion .h-band__row--b { rotate: 1.6deg; margin-block-start: -0.55em; }
 .h-feat__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-6) var(--gutter); perspective: 1400px; }
 .h-feat__item { display: grid; min-inline-size: 0; }
 .h-feat__niche { font-family: var(--font-display); font-weight: 600; font-size: var(--fs-micro); letter-spacing: 0.04em; color: var(--c-accent-soft); text-transform: lowercase; }
-.h-feat .c-card__media { background: radial-gradient(90% 70% at 50% 45%, var(--c-surface-2), var(--c-surface)); }
 .h-feat .c-card__foot { font-family: var(--font-display); font-weight: 600; }
 .h-feat .c-card .c-badge--sample { transform-origin: 0 0; transition: rotate 0.5s var(--ease); }
 .h-feat .c-card:hover .c-badge--sample { rotate: -6deg; }

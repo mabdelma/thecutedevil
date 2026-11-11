@@ -34,7 +34,7 @@ const STR = {
   how: [
     ['Pick.', 'Choose your options and add the piece to your bag.'],
     ['WhatsApp.', 'Your bag becomes a message. You press send, nothing is charged here.'],
-    ['Done.', 'A real person confirms price, stock and delivery in the chat.'],
+    ['Done.', 'Price, stock and delivery are confirmed with you in the chat.'],
   ],
   relatedEyebrow: (niche) => `more ${niche}`,
   relatedTitle: 'there is more behind this one.',
@@ -56,18 +56,29 @@ const ICON = {
 };
 
 /* ---------------------------------------------------------------- templates */
+/** The value an option group starts on: its own `default`, else the value whose price is the one shown, else the first. */
+function defaultValue(p, opt) {
+  if (opt.default && opt.values.includes(opt.default)) return opt.default;
+  if (opt.prices) {
+    const match = opt.values.find((v) => opt.prices[v] === p.price);
+    if (match) return match;
+  }
+  return opt.values[0];
+}
+
 function optionHTML(p, opt) {
+  const preset = defaultValue(p, opt);
   const pills = opt.values.map((value, i) => {
     const sub = opt.prices ? `<span class="s-pill__sub">${esc(formatPrice(opt.prices[value], p.currency))}</span>` : '';
     return `
 <label class="s-pill">
-  <input class="s-pill__input" type="radio" name="${esc(opt.name)}" value="${esc(value)}" id="opt-${esc(opt.name)}-${i}">
+  <input class="s-pill__input" type="radio" name="${esc(opt.name)}" value="${esc(value)}" id="opt-${esc(opt.name)}-${i}"${value === preset ? ' checked' : ''}>
   <span class="s-pill__face"><span>${esc(value)}</span>${sub}</span>
 </label>`;
   }).join('');
   return `
 <fieldset class="s-opt" data-option="${esc(opt.name)}" aria-describedby="opt-${esc(opt.name)}-error">
-  <legend class="s-opt__legend">${esc(STR.optionGroup(opt.name))} <span class="s-opt__chosen" data-chosen></span></legend>
+  <legend class="s-opt__legend">${esc(STR.optionGroup(opt.name))} <span class="s-opt__chosen" data-chosen>${esc(STR.chosen(preset))}</span></legend>
   <div class="s-opt__pills">${pills}</div>
   <p class="c-field__error" id="opt-${esc(opt.name)}-error" role="alert"></p>
 </fieldset>`;
@@ -110,7 +121,7 @@ function pageHTML(p) {
     <a class="s-crumb" href="shop.html?niche=${p.niche}">${ICON.back}${esc(STR.backTo(p.niche))}</a>
     <div class="s-product__grid">
       <div class="s-product__media" data-reveal="scale">
-        <div class="s-stage" data-stage data-devil>
+        <div class="s-stage" data-stage data-devil data-niche="${p.niche}">
           <div class="s-stage__clip" aria-hidden="true">
             <div class="s-stage__glow"></div>
             <div class="s-stage__ring"></div>
@@ -232,6 +243,13 @@ function bindBuy(host, p) {
     qtyValue.textContent = String(qty);
     qtyButtons.forEach((b) => { b.disabled = (b.dataset.qty === '-1' && qty <= cart.MIN_QTY) || (b.dataset.qty === '1' && qty >= cart.MAX_QTY); });
   };
+
+  // every group starts on its default, so "add to bag" works on the first tap
+  groups.forEach((g) => {
+    const on = g.querySelector('input:checked');
+    if (on) chosen[g.dataset.option] = on.value;
+  });
+  paintPrice();
 
   form.addEventListener('change', (e) => {
     const group = e.target.closest('[data-option]');

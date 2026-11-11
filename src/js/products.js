@@ -5,7 +5,7 @@
 //
 // Shape: { id (slug), name, niche: 'wear'|'scent'|'tech', price: Number, currency: 'EUR', sample: true,
 //          pitch (one line), tagline (what it is), description, art (id from art.js),
-//          options: [{ name, values: [], prices?: { value: Number } }], status: 'live'|'soon'|'sold', featured }
+//          options: [{ name, values: [], default?, prices?: { value: Number } }], status: 'live'|'soon'|'sold', featured }
 // `prices` on an option is optional: when present, the chosen value sets the unit price (see priceOf).
 import { renderArt } from './art.js';
 
@@ -31,7 +31,7 @@ export const products = [
     tagline: 'heavyweight hoodie',
     description: 'A heavy, soft navy hoodie that looks perfectly innocent from the front. Pull the hood up and two small horns appear. The logo sits where the drawstrings meet, so the secret is always close to your chest.',
     art: 'hoodie',
-    options: [{ name: 'size', values: SIZES }],
+    options: [{ name: 'size', values: SIZES, default: 'M' }],
     status: 'live',
     featured: true,
   },
@@ -46,7 +46,7 @@ export const products = [
     tagline: 'pocket tee',
     description: 'A cream cotton tee with one small detail: a horned shadow looking out of the chest pocket. Most people will not notice it. The ones who do will ask, and the answer is always "long story".',
     art: 'tee',
-    options: [{ name: 'size', values: SIZES }],
+    options: [{ name: 'size', values: SIZES, default: 'M' }],
     status: 'live',
     featured: true,
   },
@@ -151,9 +151,9 @@ export const products = [
     price: 59,
     currency: 'EUR',
     sample: true,
-    pitch: 'horned pocket case, loud for its size.',
+    pitch: 'horned pocket case. nobody knows what is playing.',
     tagline: 'wireless earbuds',
-    description: 'Wireless earbuds in a small pocket case with two horns on top. It looks like a toy on the desk and sounds much bigger than it should. Your playlist stays your business.',
+    description: 'Wireless earbuds in a small pocket case with two horns on top. It looks like a toy on the desk. What plays inside is between you and the horns. Your playlist stays your business.',
     art: 'earbuds',
     options: [{ name: 'colour', values: ['cream', 'navy'] }],
     status: 'live',
@@ -166,9 +166,9 @@ export const products = [
     price: 39,
     currency: 'EUR',
     sample: true,
-    pitch: 'fast charge, cool head.',
+    pitch: 'hot name, calm face.',
     tagline: 'slim power bank',
-    description: 'A slim navy power bank with the face on the front and four small lights that tell you how much is left. It charges fast and stays calm in your pocket. The only one who knows how long the night will be.',
+    description: 'A slim navy power bank with the face on the front and four small lights that tell you how much is left. It sits in your pocket and says nothing. The only one who knows how long the night will be.',
     art: 'powerbank',
     options: [],
     status: 'live',

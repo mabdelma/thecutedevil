@@ -16,7 +16,7 @@ const STR = {
 const FALLBACK = [
   { id: 'halos-off-hoodie', name: "halo's off hoodie", pitch: 'tiny horns stitched on the hood.', niche: 'wear', art: 'hoodie' },
   { id: 'secret-no-1', name: 'secret no. 1', pitch: 'warm amber, a little smoke. signature.', niche: 'scent', art: 'perfume-secret' },
-  { id: 'little-devil-earbuds', name: 'little devil earbuds', pitch: 'horned pocket case, loud for its size.', niche: 'tech', art: 'earbuds' },
+  { id: 'little-devil-earbuds', name: 'little devil earbuds', pitch: 'horned pocket case. nobody knows what is playing.', niche: 'tech', art: 'earbuds' },
   { id: 'nice-guy-long-story-tee', name: 'nice guy, long story tee', pitch: 'red shadow peeking from the pocket.', niche: 'wear', art: 'tee' },
   { id: 'after-midnight', name: 'after midnight', pitch: 'oud and leather. for the hours nobody asks about.', niche: 'scent', art: 'perfume-midnight' },
   { id: 'night-shift-lamp', name: 'night shift lamp', pitch: 'one dial, angel white to devil red.', niche: 'tech', art: 'lamp' },
@@ -76,7 +76,7 @@ function cardHtml(p, fmt) {
   const foot = hasPrice
     ? `<div class="c-card__foot"><span>${esc(fmt(p.price, p.currency || 'EUR'))}</span>${p.sample ? `<span class="c-badge c-badge--sample">${esc(STR.sample)}</span>` : ''}</div>`
     : '';
-  return `<div class="h-feat__item"><article class="c-card" data-devil data-tilt="6" data-cursor="view">
+  return `<div class="h-feat__item"><article class="c-card" data-devil data-tilt="6" data-cursor="view" data-niche="${esc(p.niche)}">
 <div class="c-card__media">${badges.length ? `<div class="c-card__badges">${badges.join('')}</div>` : ''}${art(p.art, p.name)}</div>
 <div class="c-card__body"><p class="h-feat__niche">${esc(p.niche)}</p>
 <h3 class="c-card__title"><a class="c-card__link" href="product.html?id=${encodeURIComponent(p.id)}">${esc(p.name)}</a></h3>
@@ -315,16 +315,42 @@ function initHow({ gsap }) {
       return clamp(at / len - 0.04, 0.02, 0.96);
     });
   };
+  // each circle waits small and pops in as the line reaches it
+  const icons = steps.map((el) => $('.h-step__icon', el));
+  const lit = steps.map(() => false);
+  icons.forEach((icon) => { if (icon) gsap.set(icon, { scale: 0.6 }); });
+  hiddenByUs.push(...icons.filter(Boolean));
+  const pop = (i, on) => {
+    if (lit[i] === on) return;
+    lit[i] = on;
+    if (icons[i]) gsap.to(icons[i], { scale: on ? 1 : 0.6, duration: on ? 0.6 : 0.3, ease: on ? 'back.out(2.4)' : 'power2.out', overwrite: true });
+  };
   const state = { p: 0 };
   const apply = () => {
     wrap.style.setProperty('--lp', state.p.toFixed(3));
-    steps.forEach((el, i) => el.classList.toggle('is-on', state.p >= (marks[i] ?? 1)));
+    steps.forEach((el, i) => { const on = state.p >= (marks[i] ?? 1); el.classList.toggle('is-on', on); pop(i, on); });
     words.forEach((el, i) => el.classList.toggle('is-on', state.p >= (marks[i] ?? 1)));
   };
   gsap.to(state, {
     p: 1, ease: 'none', onUpdate: apply,
     scrollTrigger: { trigger: wrap, start: 'top 78%', end: 'bottom 62%', scrub: 0.5, onRefresh: measure },
   });
+}
+
+/* ------------------------------------------------------------------ touch: cards turn a little with the scroll */
+// Pointer tilt needs a mouse. Without one, the featured cards and niche tiles get a light
+// scroll-scrubbed turn instead (transform only; never under reduced motion, see boot).
+function initTouchTilt({ gsap }) {
+  if (!window.matchMedia('(hover: none)').matches) return;
+  const turn = (el, trigger, i, deg, lift) => {
+    const dir = i % 2 ? -1 : 1;
+    gsap.fromTo(el, { rotationY: dir * deg, y: lift, transformPerspective: 900 }, {
+      rotationY: -dir * deg, y: -lift, ease: 'none',
+      scrollTrigger: { trigger, start: 'top bottom', end: 'bottom top', scrub: 0.6 },
+    });
+  };
+  $$('.h-feat__item').forEach((item, i) => { const card = $('.c-card', item); if (card) turn(card, item, i, 9, 12); });
+  $$('.h-trio__item').forEach((item, i) => { const tile = $('.h-niche', item); if (tile) turn(tile, item, i, 7, 10); });
 }
 
 /* ------------------------------------------------------------------ closing wordmark */
@@ -390,6 +416,7 @@ ready.then(async (env) => {
     initSpotlights(env);
     initFounder(env);
     initHow(env);
+    initTouchTilt(env);
     initWordmark(env);
   } catch (err) {
     console.warn('[tcd:home]', err);

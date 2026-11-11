@@ -21,6 +21,8 @@ const STR = {
   themeLabel: 'Accent colour',
   themes: { cream: 'Red on cream', red: 'Red on navy', purple: 'Purple', blue: 'Blue' },
   themePick: 'pick your shade',
+  themeCycle: 'Change accent colour',
+  footWhatsapp: 'whatsapp',
   bag: 'Open bag',
   bagCount: (n) => (n === 1 ? '1 item in bag' : `${n} items in bag`),
   menuOpen: 'Open menu',
@@ -80,6 +82,7 @@ function headerHTML(current) {
   <nav class="c-nav" aria-label="${esc(STR.navLabel)}"><ul class="c-nav__list">${links}</ul></nav>
   <div class="c-header__tools">
     ${switcherHTML()}
+    <button type="button" class="c-theme__dot c-theme-cycle" data-theme-cycle aria-label="${esc(STR.themeCycle)}" title="${esc(STR.themeCycle)}"></button>
     <button type="button" class="c-bag" data-cart-toggle aria-label="${esc(STR.bag)}" aria-haspopup="dialog">
       ${ICON_BAG}
       <span class="c-bag__count is-empty" data-cart-count aria-live="polite" aria-atomic="true">0</span>
@@ -104,7 +107,9 @@ function sheetHTML(current) {
 
 function footerHTML() {
   const list = (items) => items.map((n) => `<li><a class="c-footer__link" href="${n.href}">${esc(n.label)}</a></li>`).join('');
-  const links = list(STR.nav);
+  // "contact" lives under help; here its place is taken by a direct WhatsApp link
+  const links = list(STR.nav.filter((n) => n.key !== 'contact'))
+    + `<li><a class="c-footer__link" href="${WHATSAPP_URL}" target="_blank" rel="noopener">${esc(STR.footWhatsapp)}</a></li>`;
   return `
 <div class="c-container c-container--wide">
   <div class="c-footer__top">
@@ -153,6 +158,12 @@ function bindSwitchers(theme) {
       theme.set(next);
       const b = group.querySelector(`[data-theme-set="${next}"]`);
       if (b) b.focus();
+    });
+  });
+  document.querySelectorAll('[data-theme-cycle]').forEach((b) => {
+    b.addEventListener('click', () => {
+      const list = theme.list;
+      theme.set(list[(list.indexOf(theme.get()) + 1) % list.length]);
     });
   });
   document.addEventListener('tcd:theme', paint);

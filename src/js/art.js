@@ -21,9 +21,13 @@ const devil = (x, y, h, attr = A) => {
   return `<g transform="translate(${n(x - 256 * s)} ${n(y + 14 * s)}) scale(${n(s)})" ${attr}><path d="M160 140C108 100 120 18 180-14 152 30 172 72 226 94ZM352 140C404 100 392 18 332-14 360 30 340 72 286 94Z"/><path d="M128 252C122 150 176 84 256 84S390 150 384 252L378 310C378 396 330 470 256 470S134 396 134 310Z"/></g>`;
 };
 
+// soft floor shadow: a radial fade, no filters. "@@" becomes the art id in renderArt so every
+// illustration owns its gradient id (callers add their own scope on top, see artFor).
+const FLOOR_DEF = '<radialGradient id="a-fl-@@"><stop offset="0" stop-color="#020714" stop-opacity=".3"/><stop offset=".55" stop-color="#020714" stop-opacity=".12"/><stop offset="1" stop-color="#020714" stop-opacity="0"/></radialGradient>';
+const floor = (fy, frx, ry = 13) => `<ellipse cx="200" cy="${fy}" rx="${n(frx * 1.12)}" ry="${ry}" fill="url(#a-fl-@@)"/>`;
 const mirror = (s) => `${s}<g transform="translate(400 0) scale(-1 1)">${s}</g>`;
 const backdrop = (cy = 240, r = 172, fy = 462, frx = 120) =>
-  `<circle cx="200" cy="${cy}" r="${r}" ${A} opacity=".1"/><circle cx="200" cy="${cy}" r="${r - 34}" fill="none" stroke="#FFF4E6" stroke-opacity=".08" stroke-width="1.5"/><ellipse cx="200" cy="${fy}" rx="${frx}" ry="11" fill="#020714" opacity=".45"/>`;
+  `<circle cx="200" cy="${cy}" r="${r}" ${A} opacity=".1"/><circle cx="200" cy="${cy}" r="${r - 34}" fill="none" stroke="#FFF4E6" stroke-opacity=".08" stroke-width="1.5"/>${floor(fy, frx)}`;
 const grad = (id, a, b, x2 = 0, y2 = 1) =>
   `<linearGradient id="${id}" x1="0" y1="0" x2="${x2}" y2="${y2}"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient>`;
 
@@ -163,7 +167,7 @@ ${logo(134, 150, 120)}
 
   lamp: () => `<defs>${grad('a-lamp-b', '#FFF8EE', '#D9C6AB', 1, 0)}</defs>
 <circle cx="200" cy="225" r="190" ${A} opacity=".08"/><circle cx="200" cy="225" r="145" ${A} opacity=".12"/><circle cx="200" cy="225" r="108" ${A} opacity=".2"/>
-<ellipse cx="200" cy="456" rx="150" ry="16" ${A} opacity=".28"/><ellipse cx="200" cy="456" rx="74" ry="9" fill="#020714" opacity=".5"/>
+<ellipse cx="200" cy="456" rx="150" ry="16" ${A} opacity=".28"/>${floor(456, 82, 11)}
 ${horns(200, 162, 40, 1.9)}
 <circle cx="200" cy="230" r="84" ${A}/>
 <circle cx="200" cy="230" r="84" fill="#fff" opacity=".16"/><circle cx="200" cy="238" r="58" fill="#fff" opacity=".2"/><circle cx="200" cy="244" r="34" fill="#fff" opacity=".28"/>
@@ -192,7 +196,9 @@ const placeholder = () => `${backdrop(240, 172, 448, 100)}${logo(80, 120, 240)}`
 export const artIds = Object.keys(ART);
 
 export function renderArt(artId, { title } = {}) {
-  const draw = Object.prototype.hasOwnProperty.call(ART, artId) ? ART[artId] : placeholder;
+  const known = Object.prototype.hasOwnProperty.call(ART, artId);
+  const draw = known ? ART[artId] : placeholder;
+  const key = known ? artId : 'none';
   const label = String(title || 'The Cute Devil product').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" class="c-art" role="img" aria-label="${label}" focusable="false">${draw()}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" class="c-art" role="img" aria-label="${label}" focusable="false"><defs>${FLOOR_DEF}</defs>${draw()}</svg>`.replace(/@@/g, key);
 }

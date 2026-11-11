@@ -49,6 +49,8 @@ function boot() {
       lenis.on('scroll', ScrollTrigger.update);
       gsap.ticker.add((time) => lenis.raf(time * 1000));
       gsap.ticker.lagSmoothing(0);
+      // keep Lenis' scroll limit in step with the page height whenever ScrollTrigger re-measures
+      ScrollTrigger.addEventListener('refresh', () => lenis.resize());
       // any module may lock page scroll by toggling html.is-locked (menu, cart drawer)
       new MutationObserver(() => {
         if (root.classList.contains('is-locked')) lenis.stop(); else lenis.start();

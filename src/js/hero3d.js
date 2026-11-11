@@ -364,8 +364,9 @@ export function mount(hostEl, { accent } = {}) {
     camera.updateProjectionMatrix();
     state.halfH = Math.tan(THREE.MathUtils.degToRad(CFG.fov / 2)) * CFG.camZ;
     state.halfW = state.halfH * camera.aspect;
-    const wide = camera.aspect >= 1.15 && w >= 768;
-    // Wide: orb sits right of centre, leaving the left for the headline. Narrow: centred.
+    // The CSS puts the headline on the left from 768px up (also on portrait tablets), so the orb
+    // sits right of centre there and never covers the copy. Narrower hosts: centred.
+    const wide = w >= 768;
     state.baseX = wide ? state.halfW * 0.42 : 0;
     const room = wide ? state.halfW - state.baseX : state.halfW;
     state.baseScale = clamp(Math.min(room / 1.7, state.halfH / 1.75), 0.3, 0.94);

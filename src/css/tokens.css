@@ -89,6 +89,11 @@
   --c-ok: #15803D;
   --c-error: #BE123C;
   --c-glow: 0.13;              /* strength of the page-top accent glow */
+  --c-header-alpha: 0.95;      /* stuck header: nearly solid on cream so cards do not smudge through */
+  --c-stage-wear: #EFE3D2;     /* product stages, one quiet tint per niche: warm sand */
+  --c-stage-scent: #F8DFD8;    /* blush */
+  --c-stage-tech: #E6E5E6;     /* cool mist */
+  --c-stage-shade: 0.07;       /* depth of the shade at the foot of a stage */
 
   /* the switcher swatches never change with the theme */
   --c-theme-cream: #FFF4E6;
@@ -122,6 +127,11 @@
   --c-ok: #86EFAC;
   --c-error: #FDA4AF;
   --c-glow: 0.2;
+  --c-header-alpha: 0.78;
+  --c-stage-wear: var(--c-surface-2);
+  --c-stage-scent: var(--c-surface-2);
+  --c-stage-tech: var(--c-surface-2);
+  --c-stage-shade: 0;
 }
 
 [data-theme='purple'] {

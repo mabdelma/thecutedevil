@@ -223,7 +223,7 @@
 .s-stage {
   --devil-rest: 10; --devil-max: 20; --devil-horn: 7rem;
   position: relative; aspect-ratio: 4 / 5; border-radius: calc(var(--radius) * 1.4);
-  background: var(--c-surface-2); border: 1px solid var(--c-line); perspective: 1100px;
+  background: linear-gradient(to top, rgb(var(--c-text-rgb) / var(--c-stage-shade, 0)), transparent 30%), var(--stage, var(--c-surface-2)); border: 1px solid var(--c-line); perspective: 1100px;
 }
 @media (min-width: 62em) { .s-stage { aspect-ratio: 1 / 1; max-block-size: calc(100dvh - var(--header-h) - 3.5rem); inline-size: 100%; min-block-size: 26rem; } }
 .s-stage__clip { position: absolute; inset: 0; border-radius: inherit; overflow: hidden; }
@@ -265,7 +265,8 @@
 .s-product__price-note { flex-basis: 100%; font-size: var(--fs-small); color: var(--c-muted); }
 
 /* buy form */
-.s-buy { display: grid; gap: var(--space-5); padding: var(--space-5); border: 1px solid var(--c-line); border-radius: var(--radius); background: rgb(var(--c-text-rgb) / 0.03); }
+.s-buy { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-5); padding: var(--space-5); border: 1px solid var(--c-line); border-radius: var(--radius); background: rgb(var(--c-text-rgb) / 0.03); }
+.s-buy > .c-btn[disabled] { white-space: normal; padding-inline: 1.25rem; } /* long 'coming soon' label must fit 360px */
 .s-opt { border: 0; padding: 0; margin: 0; min-inline-size: 0; display: grid; gap: var(--space-3); }
 .s-opt__legend { display: flex; align-items: baseline; gap: var(--space-2); padding: 0; font-family: var(--font-display); font-weight: 600; font-size: var(--fs-small); text-transform: lowercase; }
 .s-opt__chosen { color: var(--c-muted); font-weight: 400; }
@@ -344,6 +345,7 @@
 
 /* skeleton while the module loads (JS only; no-JS readers get the noscript block) */
 .s-skeleton { min-block-size: 60vh; }
+.no-js .s-skeleton { display: none; } /* without JS only the notice shows */
 
 /* =====================================================================
    reduced motion

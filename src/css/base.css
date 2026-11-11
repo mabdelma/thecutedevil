@@ -15,7 +15,7 @@ body {
   text-rendering: optimizeLegibility; overflow-x: clip;
   transition: background-color 0.5s var(--ease);
 }
-main { flex: 1 0 auto; display: block; }
+main { flex: 1 0 auto; display: block; overflow-x: clip; } /* tilted reveal start states must not widen the page on phones */
 img, svg, video, canvas, picture { display: block; max-inline-size: 100%; }
 img, video { block-size: auto; }
 input, button, textarea, select { font: inherit; color: inherit; }
@@ -162,7 +162,7 @@ small { font-size: var(--fs-small); }
   transition: background-color var(--dur) var(--ease), border-color var(--dur) var(--ease);
 }
 [data-shell='header'].is-stuck, .is-menu-open [data-shell='header'] {
-  background: rgb(var(--c-bg-rgb) / 0.78); border-block-end-color: var(--c-line);
+  background: rgb(var(--c-bg-rgb) / var(--c-header-alpha, 0.78)); border-block-end-color: var(--c-line);
   -webkit-backdrop-filter: blur(14px) saturate(1.4); backdrop-filter: blur(14px) saturate(1.4);
 }
 .is-menu-open [data-shell='header'] { background: var(--c-bg); }
@@ -200,6 +200,11 @@ small { font-size: var(--fs-small); }
 .c-theme__dot[aria-checked='true']::before { box-shadow: 0 0 0 3px var(--c-bg), 0 0 0 5px var(--c-contrast); }
 .c-theme__dot--cream { --dot: linear-gradient(135deg, var(--c-theme-cream) 50%, var(--c-theme-red) 50%); } .c-theme__dot--red { --dot: var(--c-theme-red); } .c-theme__dot--purple { --dot: var(--c-theme-purple); } .c-theme__dot--blue { --dot: var(--c-theme-blue); }
 .c-header__tools > .c-theme { display: none; margin-inline-end: var(--space-2); }
+/* phones: one dot that steps through the shades (the full switcher lives in the menu) */
+.c-theme-cycle { display: none; --dot: linear-gradient(135deg, var(--c-theme-cream) 50%, var(--c-theme-red) 50%); }
+[data-theme='red'] .c-theme-cycle { --dot: var(--c-theme-red); } [data-theme='purple'] .c-theme-cycle { --dot: var(--c-theme-purple); } [data-theme='blue'] .c-theme-cycle { --dot: var(--c-theme-blue); }
+.c-theme-cycle::before { box-shadow: 0 0 0 3px var(--c-bg), 0 0 0 4.5px var(--c-line-strong); }
+@media (min-width: 22.5em) and (max-width: 55.99em) { .c-theme-cycle { display: grid; margin-inline: 0; } }
 
 /* bag button */
 .c-bag { position: relative; inline-size: 2.75rem; block-size: 2.75rem; display: grid; place-items: center; border-radius: 50%; transition: background-color var(--dur-fast); }
@@ -324,6 +329,13 @@ small { font-size: var(--fs-small); }
 .c-card:hover, .c-card:focus-within { border-color: var(--c-accent); }
 .c-card--flat:hover, .c-card--flat:focus-within { border-color: var(--c-line); }
 .c-card__media { position: relative; aspect-ratio: 4 / 5; overflow: hidden; border-radius: calc(var(--radius) - 1px) calc(var(--radius) - 1px) 0 0; background: var(--c-surface-2); }
+/* stages: one quiet tint per niche (tokens; all equal on the dark themes) with a light well in the middle and a shade at the foot */
+[data-niche='wear'] { --stage: var(--c-stage-wear); } [data-niche='scent'] { --stage: var(--c-stage-scent); } [data-niche='tech'] { --stage: var(--c-stage-tech); }
+.c-card[data-niche] .c-card__media {
+  background:
+    linear-gradient(to top, rgb(var(--c-text-rgb) / var(--c-stage-shade, 0)), transparent 34%),
+    radial-gradient(85% 65% at 50% 42%, color-mix(in srgb, var(--c-surface) 70%, var(--stage)), var(--stage) 92%);
+}
 .c-card__media > svg, .c-card__media > img { inline-size: 100%; block-size: 100%; object-fit: cover; transition: transform 0.8s var(--ease); }
 .c-card:hover .c-card__media > svg, .c-card:hover .c-card__media > img { transform: scale(1.05) rotate(-1.5deg); }
 .c-card__badges { position: absolute; inset-block-start: var(--space-3); inset-inline-start: var(--space-3); display: flex; gap: var(--space-2); z-index: 1; }

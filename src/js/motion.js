@@ -144,12 +144,13 @@ function setupSplit(el) {
   gsap.set(s.targets, { yPercent: 125 });
   onView(el, () => {
     el.classList.add('is-in');
-    const vars = { yPercent: 0, duration: type === 'chars' ? 0.7 : 0.9, ease: EASE, overwrite: 'auto' };
+    const dur = parseFloat(el.dataset.dur) || (type === 'chars' ? 0.7 : 0.9); // data-dur: a quicker reveal for one headline
+    const vars = { yPercent: 0, duration: dur, ease: EASE, overwrite: 'auto' };
     if (type === 'lines') {
       const lines = s.lines();
       gsap.to(s.targets, { ...vars, delay: (i) => delay + lines[i] * 0.1 });
     } else {
-      gsap.to(s.targets, { ...vars, delay, stagger: type === 'chars' ? 0.022 : 0.06 });
+      gsap.to(s.targets, { ...vars, delay, stagger: type === 'chars' ? 0.022 : Math.min(0.06, dur / 12) });
     }
   });
 }
