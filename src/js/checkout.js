@@ -2,10 +2,13 @@
 // v1 has no payment, no stock sync and no order database: an order exists once the customer
 // presses send in WhatsApp. The cart drawer (cart-ui.js) drives the steps and calls this module.
 import { getById, priceOf, formatPrice } from './products.js';
+import { t, getLang } from './i18n.js';
 
 export const WHATSAPP_NUMBER = '34622209935'; // digits only, country code first
 const MAX_MESSAGE = 1500; // keep the wa.me link comfortably short
 
+// The order message is written for the seller, so it stays in English in every language.
+// Only the form errors shown to the customer come from the dictionary.
 const STR = {
   hello: "Hi The Cute Devil! I'd like to order:",
   sample: '(sample)',
@@ -15,9 +18,10 @@ const STR = {
   note: (v) => `Note: ${v}`,
   ref: (v) => `Ref: ${v}`,
   more: (n) => `+ ${n} more ${n === 1 ? 'line' : 'lines'} (I will list them in the chat)`,
-  errName: 'Please tell us your name (2 to 60 characters).',
-  errCity: 'Please tell us your city and country (2 to 80 characters).',
-  errNote: 'Please keep the note under 300 characters.',
+  lang: (v) => `Site language: ${v}`,
+  get errName() { return t('checkout.errName'); },
+  get errCity() { return t('checkout.errCity'); },
+  get errNote() { return t('checkout.errNote'); },
 };
 
 export const LIMITS = { name: [2, 60], city: [2, 80], note: [0, 300] };
@@ -85,6 +89,7 @@ export function buildOrderText(items, customer = {}) {
     STR.city(city),
     ...(note ? [STR.note(note)] : []),
     STR.ref(customer.ref || orderRef()),
+    STR.lang(getLang()),
   ];
   const compose = (shown) => {
     const list = rows.slice(0, shown).map((row, i) => `${i + 1}) ${row}`);

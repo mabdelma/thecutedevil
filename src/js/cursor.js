@@ -1,7 +1,9 @@
 // The Cute Devil: decorative cursor follower (dot + horned ring).
 // It never hides or replaces the native cursor. Fine pointers only, off under reduced motion.
 // Markup hook: data-cursor="link|view|drag|hide".
-const STR = { view: 'view', drag: 'drag' };
+import { strings } from './i18n.js';
+
+const STR = strings({ view: 'cursor.view', drag: 'cursor.drag' });
 
 const INTERACTIVE = 'a[href],button,summary,[role="button"],[role="radio"],[role="tab"],select';
 const TEXTUAL = 'input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),textarea';
@@ -32,6 +34,7 @@ export function initCursor({ gsap, reduced, fine }) {
     label.textContent = STR[next] || '';
     mode = next;
   }
+  document.addEventListener('tcd:lang', () => { label.textContent = STR[mode] || ''; });
   function modeFor(target) {
     if (!target || !target.closest) return '';
     const hinted = target.closest('[data-cursor]');

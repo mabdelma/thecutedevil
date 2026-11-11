@@ -1,11 +1,13 @@
 // The Cute Devil: boot. Owner: shell.
 // Contract: `ready` resolves with { gsap, ScrollTrigger, lenis|null, reduced, fine }; `theme` is { get, set, list }.
+// `ready` waits for the active language (i18n.js), so every module that awaits it can call t() safely.
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 import * as shell from './shell.js';
 import * as motion from './motion.js';
 import { initCursor } from './cursor.js';
+import * as i18n from './i18n.js';
 
 const THEME_KEY = 'tcd:theme';
 const THEMES = ['cream', 'red', 'purple', 'blue']; // first one is the default
@@ -79,7 +81,9 @@ function boot() {
   return { gsap, ScrollTrigger, lenis, reduced, fine };
 }
 
-export const ready = new Promise((resolve) => {
+// The dictionary comes first: headlines are split into words/letters by motion.scan, and that has to
+// happen on the translated text. English resolves at once, other languages after one small chunk.
+export const ready = i18n.ready.catch(() => 'en').then(() => {
   let result;
   try {
     result = boot();
@@ -89,8 +93,9 @@ export const ready = new Promise((resolve) => {
     root.classList.add('motion-off');
     result = { gsap, ScrollTrigger, lenis: null, reduced: true, fine: false };
   }
-  resolve(result);
+  return result;
 });
+export { i18n };
 
 // The cart UI belongs to the shop developer. Loaded only if the file exists, never fatal.
 ready.then(() => {

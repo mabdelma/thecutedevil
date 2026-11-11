@@ -2,26 +2,23 @@
 // Also exports the product card so product.html can show related pieces.
 import { ready } from '../app.js';
 import { scan, refresh } from '../motion.js';
-import { products, byNiche, NICHES, formatPrice, artFor } from '../products.js';
+import { products, byNiche, NICHES, formatPrice, artFor, nicheLabel, optionLabel } from '../products.js';
+import { t, tn, strings, getLang } from '../i18n.js';
 import * as cart from '../cart.js';
 
-const STR = {
-  sample: 'Sample',
-  soon: 'coming soon',
-  sold: 'sold out',
-  add: 'add',
-  addLabel: (name) => `Add ${name} to bag`,
-  choose: (option) => `choose ${option}`,
-  look: 'take a look',
-  lines: {
-    all: 'everything. so far.',
-    wear: 'dress like you know something.',
-    scent: 'smell like a secret.',
-    tech: 'gadgets with a hidden side.',
-  },
-  status: (n, niche) => `<strong>${n}</strong> ${niche === 'all' ? '' : `${niche} `}${n === 1 ? 'piece' : 'pieces'}`,
-  title: (niche) => (niche === 'all' ? 'Shop · The Cute Devil' : `${niche[0].toUpperCase()}${niche.slice(1)} · Shop · The Cute Devil`),
-};
+const cap = (word) => { const w = String(word); return w ? w[0].toLocaleUpperCase(getLang()) + w.slice(1) : w; };
+const STR = strings({
+  sample: 'common.sample',
+  soon: 'common.soon',
+  sold: 'common.sold',
+  add: 'shop.card.add',
+  addLabel: (name) => t('shop.card.addLabel', { name }),
+  choose: (option) => t('shop.card.choose', { option }),
+  look: 'shop.card.look',
+  line: (niche) => t(`shop.line.${niche}`),
+  status: (n, niche) => (niche === 'all' ? tn('shop.status.all', n) : tn('shop.status.niche', n, { niche: nicheLabel(niche) })),
+  title: (niche) => (niche === 'all' ? t('shop.meta.title') : t('shop.meta.titleNiche', { niche: cap(nicheLabel(niche)) })),
+});
 
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const ICON_PLUS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M6 12h12M12 6v12"/></svg>';
@@ -34,7 +31,7 @@ export function cardHTML(p, { scope = '', level = 3 } = {}) {
   const badge = p.status === 'soon' ? `<span class="c-badge c-badge--soon">${esc(STR.soon)}</span>`
     : p.status === 'sold' ? `<span class="c-badge c-badge--sold">${esc(STR.sold)}</span>` : '';
   let more = '';
-  if (p.status === 'live' && !quick) more = STR.choose(p.options[0].name);
+  if (p.status === 'live' && !quick) more = STR.choose(optionLabel(p.options[0].name));
   else if (p.status !== 'live') more = STR.look;
   return `
 <article class="c-card s-card s-card--${p.status}" data-devil data-tilt="6" data-niche="${p.niche}" data-id="${esc(p.id)}">
@@ -44,11 +41,11 @@ export function cardHTML(p, { scope = '', level = 3 } = {}) {
     ${quick ? `<button type="button" class="s-card__add" data-quick-add="${esc(p.id)}" aria-label="${esc(STR.addLabel(p.name))}">${ICON_PLUS}<span class="s-card__add-label" aria-hidden="true">${esc(STR.add)}</span></button>` : ''}
   </div>
   <div class="c-card__body">
-    <p class="s-card__niche">${esc(p.niche)}</p>
-    <h${level} class="c-card__title"><a class="c-card__link" href="${href}">${esc(p.name)}</a></h${level}>
+    <p class="s-card__niche">${esc(nicheLabel(p.niche))}</p>
+    <h${level} class="c-card__title"><a class="c-card__link" href="${href}" translate="no">${esc(p.name)}</a></h${level}>
     <p class="c-card__text">${esc(p.pitch)}</p>
     <div class="c-card__foot">
-      <span class="s-price"><span class="s-price__num">${esc(formatPrice(p.price, p.currency))}</span>${p.sample ? `<span class="c-badge c-badge--sample">${esc(STR.sample)}</span>` : ''}</span>
+      <span class="s-price"><span class="s-price__num" translate="no">${esc(formatPrice(p.price, p.currency))}</span>${p.sample ? `<span class="c-badge c-badge--sample">${esc(STR.sample)}</span>` : ''}</span>
       ${more ? `<span class="s-card__more" aria-hidden="true">${esc(more)}${ICON_ARROW}</span>` : ''}
     </div>
   </div>
@@ -87,10 +84,14 @@ function init({ gsap, reduced }) {
 
   document.querySelectorAll('[data-count]').forEach((n) => { n.textContent = String(byNiche(n.dataset.count).length); });
 
-  grid.innerHTML = products.map((p) => cardHTML(p)).join('');
-  const cards = Array.from(grid.children);
   const matches = (card, niche) => niche === 'all' || card.dataset.niche === niche;
-  cards.forEach((card) => { card.hidden = !matches(card, current); });
+  let cards = [];
+  const draw = () => {
+    grid.innerHTML = products.map((p) => cardHTML(p)).join('');
+    cards = Array.from(grid.children);
+    cards.forEach((card) => { card.hidden = !matches(card, current); });
+  };
+  draw();
 
   function paintChrome(niche, swap) {
     chips.forEach((chip) => {
@@ -103,12 +104,12 @@ function init({ gsap, reduced }) {
       gsap.to(line, {
         opacity: 0, y: -12, duration: 0.18, ease: 'power2.in', overwrite: true,
         onComplete: () => {
-          line.textContent = STR.lines[niche];
+          line.textContent = STR.line(niche);
           gsap.fromTo(line, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out', clearProps: 'opacity,transform' });
         },
       });
     } else {
-      line.textContent = STR.lines[niche];
+      line.textContent = STR.line(niche);
     }
   }
 
@@ -183,6 +184,15 @@ function init({ gsap, reduced }) {
   bindQuickAdd(grid);
   scan(grid);
   refresh();
+
+  // language change: the cards are drawn again in the new language, the filter stays where it is
+  document.addEventListener('tcd:lang', () => {
+    if (animate) cards.forEach((card) => gsap.killTweensOf(card));
+    draw();
+    paintChrome(current, false);
+    scan(grid);
+    refresh();
+  });
 }
 
 if (document.body.dataset.page === 'shop') {

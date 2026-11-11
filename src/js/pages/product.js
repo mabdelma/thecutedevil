@@ -1,51 +1,46 @@
 // The Cute Devil: product page. Reads ?id=, renders the stage, the buy form and related pieces. Owner: shop.
 import { ready } from '../app.js';
 import { scan, refresh } from '../motion.js';
-import { getById, byNiche, priceOf, formatPrice, artFor } from '../products.js';
+import { getById, byNiche, priceOf, formatPrice, artFor, nicheLabel, optionLabel, valueLabel } from '../products.js';
+import { t, strings } from '../i18n.js';
 import * as cart from '../cart.js';
 import { whatsappUrl } from '../checkout.js';
 import { cardHTML, bindQuickAdd } from './shop.js';
 
-const STR = {
-  backTo: (niche) => `all ${niche}`,
-  backAll: 'back to the shop',
-  sample: 'Sample',
-  priceNote: 'A sample price for now. We confirm the real one in the chat.',
-  soon: 'coming soon',
-  sold: 'sold out',
-  hint: 'move your mouse',
-  chosen: (v) => v,
-  pick: (name) => `Please pick a ${name} first.`,
-  optionGroup: (name) => name,
-  qty: 'quantity',
-  less: 'One less',
-  more: 'One more',
-  add: 'add to bag',
-  addBar: 'add to bag',
-  soonBtn: 'coming soon, not for sale yet',
-  soldBtn: 'sold out',
-  soonReason: 'This one is still in the making. Want to know the moment it lands?',
-  soldReason: 'The first batch is gone. Want to know when it comes back?',
-  ask: 'ask on whatsapp',
-  askText: (name) => `Hi The Cute Devil! Please tell me when "${name}" is available.`,
-  honest: 'Sample prices. Nothing is charged here.',
-  detailsTitle: 'the details',
-  howTitle: 'how ordering works',
-  how: [
-    ['Pick.', 'Choose your options and add the piece to your bag.'],
-    ['WhatsApp.', 'Your bag becomes a message. You press send, nothing is charged here.'],
-    ['Done.', 'Price, stock and delivery are confirmed with you in the chat.'],
-  ],
-  relatedEyebrow: (niche) => `more ${niche}`,
-  relatedTitle: 'there is more behind this one.',
-  lostEyebrow: 'product not found',
-  lostTitle: 'nothing here. <span class="u-accent">or is there?</span>',
-  lostText: 'We could not find that piece. It may have moved, or it was never meant to be seen. The rest of the shop is right here.',
-  lostCta: 'open the shop',
-  lostHome: 'go home',
-  pageTitle: (name) => `${name} · The Cute Devil`,
-  lostPageTitle: 'Not found · The Cute Devil',
-};
+const STR = strings({
+  backTo: (niche) => t('product.backTo', { niche: nicheLabel(niche) }),
+  sample: 'common.sample',
+  priceNote: 'product.priceNote',
+  soon: 'common.soon',
+  sold: 'common.sold',
+  hint: 'product.hint',
+  pick: (name) => t('product.pick', { option: optionLabel(name) }),
+  qty: 'product.qty',
+  less: 'product.less',
+  more: 'product.more',
+  add: 'product.add',
+  addBar: 'product.add',
+  soonBtn: 'product.soonBtn',
+  soldBtn: 'common.sold',
+  soonReason: 'product.soonReason',
+  soldReason: 'product.soldReason',
+  ask: 'product.ask',
+  honest: 'common.honest',
+  detailsTitle: 'product.detailsTitle',
+  howTitle: 'product.howTitle',
+  how: () => [1, 2, 3].map((i) => [t(`product.how${i}.k`), t(`product.how${i}.v`)]),
+  relatedEyebrow: (niche) => t('product.relatedEyebrow', { niche: nicheLabel(niche) }),
+  relatedTitle: 'product.relatedTitle',
+  lostEyebrow: 'product.lost.eyebrow',
+  lostTitle: 'product.lost.title',
+  lostText: 'product.lost.text',
+  lostCta: 'common.openShop',
+  lostHome: 'product.lost.home',
+  pageTitle: (name) => t('product.meta.titleName', { name }),
+  lostPageTitle: 'product.lost.pageTitle',
+});
+// Written to the seller on WhatsApp, so it stays in English in every language.
+const ASK_TEXT = (name) => `Hi The Cute Devil! Please tell me when "${name}" is available.`;
 
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const ICON = {
@@ -73,12 +68,12 @@ function optionHTML(p, opt) {
     return `
 <label class="s-pill">
   <input class="s-pill__input" type="radio" name="${esc(opt.name)}" value="${esc(value)}" id="opt-${esc(opt.name)}-${i}"${value === preset ? ' checked' : ''}>
-  <span class="s-pill__face"><span>${esc(value)}</span>${sub}</span>
+  <span class="s-pill__face"><span>${esc(valueLabel(value))}</span>${sub}</span>
 </label>`;
   }).join('');
   return `
 <fieldset class="s-opt" data-option="${esc(opt.name)}" aria-describedby="opt-${esc(opt.name)}-error">
-  <legend class="s-opt__legend">${esc(STR.optionGroup(opt.name))} <span class="s-opt__chosen" data-chosen>${esc(STR.chosen(preset))}</span></legend>
+  <legend class="s-opt__legend">${esc(optionLabel(opt.name))} <span class="s-opt__chosen" data-chosen>${esc(valueLabel(preset))}</span></legend>
   <div class="s-opt__pills">${pills}</div>
   <p class="c-field__error" id="opt-${esc(opt.name)}-error" role="alert"></p>
 </fieldset>`;
@@ -90,7 +85,7 @@ function buyHTML(p) {
     return `
 <div class="s-buy" data-buy>
   <button type="button" class="c-btn c-btn--primary c-btn--lg c-btn--block" disabled>${esc(soon ? STR.soonBtn : STR.soldBtn)}</button>
-  <p class="s-buy__reason">${esc(soon ? STR.soonReason : STR.soldReason)} <a class="c-link" href="${esc(whatsappUrl(STR.askText(p.name)))}" target="_blank" rel="noopener">${esc(STR.ask)}</a></p>
+  <p class="s-buy__reason">${esc(soon ? STR.soonReason : STR.soldReason)} <a class="c-link" href="${esc(whatsappUrl(ASK_TEXT(p.name)))}" target="_blank" rel="noopener">${esc(STR.ask)}</a></p>
 </div>`;
   }
   return `
@@ -125,7 +120,7 @@ function pageHTML(p) {
           <div class="s-stage__clip" aria-hidden="true">
             <div class="s-stage__glow"></div>
             <div class="s-stage__ring"></div>
-            <div class="s-stage__word">${esc(p.niche)}</div>
+            <div class="s-stage__word">${esc(nicheLabel(p.niche))}</div>
           </div>
           <div class="s-stage__tilt" data-stage-tilt><div class="s-stage__float">${artFor(p)}</div></div>
           <div class="s-stage__glare" aria-hidden="true"></div>
@@ -135,12 +130,12 @@ function pageHTML(p) {
       </div>
       <div class="s-product__info">
         <div class="s-product__top">
-          <p class="c-eyebrow" data-reveal="fade">${esc(p.niche)} · ${esc(p.tagline)}</p>
-          <h1 class="s-product__name" id="product-name" data-split="words">${esc(p.name)}</h1>
+          <p class="c-eyebrow" data-reveal="fade">${esc(nicheLabel(p.niche))} · ${esc(p.tagline)}</p>
+          <h1 class="s-product__name" id="product-name" data-split="words" translate="no">${esc(p.name)}</h1>
           <p class="c-lede s-product__pitch" data-reveal="up" data-delay="0.2">${esc(p.pitch)}</p>
         </div>
         <div class="s-product__price" data-reveal="up" data-delay="0.25">
-          <span class="s-price__num" data-price>${esc(formatPrice(p.price, p.currency))}</span>
+          <span class="s-price__num" data-price translate="no">${esc(formatPrice(p.price, p.currency))}</span>
           ${p.sample ? `<span class="c-badge c-badge--sample">${esc(STR.sample)}</span>` : ''}
           ${status}
           ${p.sample ? `<p class="s-product__price-note">${esc(STR.priceNote)}</p>` : ''}
@@ -152,7 +147,7 @@ function pageHTML(p) {
         </div>
         <aside class="s-how" aria-labelledby="how-title" data-reveal="up">
           <h2 class="s-how__title" id="how-title">${esc(STR.howTitle)}</h2>
-          <ol class="s-how__list">${STR.how.map(([k, v]) => `<li><span><strong>${esc(k)}</strong> ${esc(v)}</span></li>`).join('')}</ol>
+          <ol class="s-how__list">${STR.how().map(([k, v]) => `<li><span><strong>${esc(k)}</strong> ${esc(v)}</span></li>`).join('')}</ol>
         </aside>
       </div>
     </div>
@@ -171,8 +166,8 @@ ${related.length ? `
 ${p.status === 'live' ? `
 <div class="s-bar" data-bar>
   <div class="s-bar__text">
-    <span class="s-bar__name">${esc(p.name)}</span>
-    <span class="s-bar__price"><span data-price>${esc(formatPrice(p.price, p.currency))}</span><span class="c-badge c-badge--sample">${esc(STR.sample)}</span></span>
+    <span class="s-bar__name" translate="no">${esc(p.name)}</span>
+    <span class="s-bar__price"><span data-price translate="no">${esc(formatPrice(p.price, p.currency))}</span><span class="c-badge c-badge--sample">${esc(STR.sample)}</span></span>
   </div>
   <button type="button" class="c-btn c-btn--primary" data-bar-add>${esc(STR.addBar)}</button>
 </div>` : ''}`;
@@ -221,11 +216,12 @@ function bindStage(host, { gsap, reduced, fine }) {
   });
 }
 
-function bindBuy(host, p) {
+function bindBuy(host, p, keep = null) {
   const form = host.querySelector('form[data-buy]');
-  if (!form) return;
+  if (!form) return null;
   const chosen = {};
   let qty = 1;
+  let io = null;
   const qtyValue = form.querySelector('[data-qty-value]');
   const qtyButtons = Array.from(form.querySelectorAll('[data-qty]'));
   const priceSlots = Array.from(host.querySelectorAll('[data-price]'));
@@ -244,18 +240,28 @@ function bindBuy(host, p) {
     qtyButtons.forEach((b) => { b.disabled = (b.dataset.qty === '-1' && qty <= cart.MIN_QTY) || (b.dataset.qty === '1' && qty >= cart.MAX_QTY); });
   };
 
+  // after a language change the page is drawn again: put the customer's choices back
+  if (keep) {
+    groups.forEach((g) => {
+      const want = keep.chosen[g.dataset.option];
+      const input = want ? Array.from(g.querySelectorAll('input')).find((n) => n.value === want) : null;
+      if (input) { input.checked = true; g.querySelector('[data-chosen]').textContent = valueLabel(want); }
+    });
+    qty = Math.max(cart.MIN_QTY, Math.min(cart.MAX_QTY, Number(keep.qty) || 1));
+  }
   // every group starts on its default, so "add to bag" works on the first tap
   groups.forEach((g) => {
     const on = g.querySelector('input:checked');
     if (on) chosen[g.dataset.option] = on.value;
   });
   paintPrice();
+  paintQty();
 
   form.addEventListener('change', (e) => {
     const group = e.target.closest('[data-option]');
     if (!group) return;
     chosen[group.dataset.option] = e.target.value;
-    group.querySelector('[data-chosen]').textContent = STR.chosen(e.target.value);
+    group.querySelector('[data-chosen]').textContent = valueLabel(e.target.value);
     setError(group, '');
     paintPrice();
   });
@@ -292,7 +298,7 @@ function bindBuy(host, p) {
       bar.classList.toggle('is-on', on);
       bar.inert = !on;
     };
-    const io = new IntersectionObserver((entries) => {
+    io = new IntersectionObserver((entries) => {
       entries.forEach((en) => { if (en.target === main) seen.main = en.isIntersecting; else seen.footer = en.isIntersecting; });
       paint();
     });
@@ -300,6 +306,7 @@ function bindBuy(host, p) {
     if (footer) io.observe(footer);
     paint();
   }
+  return { state: () => ({ chosen: { ...chosen }, qty }), destroy: () => { if (io) io.disconnect(); } };
 }
 
 function init(ctx) {
@@ -307,22 +314,35 @@ function init(ctx) {
   if (!host) return;
   const p = getById(new URLSearchParams(window.location.search).get('id'));
   host.classList.remove('s-skeleton');
-  if (!p) {
-    document.title = STR.lostPageTitle;
-    host.innerHTML = lostHTML();
+  let buy = null;
+
+  function draw(keep) {
+    if (!p) {
+      document.title = STR.lostPageTitle;
+      host.innerHTML = lostHTML();
+      scan(host);
+      return;
+    }
+    document.title = STR.pageTitle(p.name);
+    const meta = document.querySelector('meta[name="description"]');
+    if (meta) meta.setAttribute('content', `${p.name}: ${p.pitch} ${STR.honest}`);
+    host.innerHTML = pageHTML(p);
+    bindStage(host, ctx);
+    buy = bindBuy(host, p, keep);
+    const related = host.querySelector('[data-related]');
+    if (related) bindQuickAdd(related);
     scan(host);
-    return;
+    refresh();
   }
-  document.title = STR.pageTitle(p.name);
-  const meta = document.querySelector('meta[name="description"]');
-  if (meta) meta.setAttribute('content', `${p.name}: ${p.pitch} ${STR.honest}`);
-  host.innerHTML = pageHTML(p);
-  bindStage(host, ctx);
-  bindBuy(host, p);
-  const related = host.querySelector('[data-related]');
-  if (related) bindQuickAdd(related);
-  scan(host);
-  refresh();
+  draw(null);
+
+  // language change: draw the page again in the new language, keeping options and quantity
+  document.addEventListener('tcd:lang', () => {
+    const keep = buy ? buy.state() : null;
+    if (buy) buy.destroy();
+    buy = null;
+    draw(keep);
+  });
 }
 
 if (document.body.dataset.page === 'product') {

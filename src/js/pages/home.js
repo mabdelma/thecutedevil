@@ -4,22 +4,23 @@
 import { ready } from '../app.js';
 import { scan, split, refresh } from '../motion.js';
 import { renderArt } from '../art.js';
+import { t, strings } from '../i18n.js';
 
-const STR = {
-  sample: 'Sample',
-  soon: 'coming soon',
-  sold: 'sold out',
-  artFallback: 'The Cute Devil product',
-};
+const STR = strings({
+  sample: 'common.sample',
+  soon: 'common.soon',
+  sold: 'common.sold',
+  artFallback: 'common.artFallback',
+});
 
-// Used only when products.js is missing or broken. Same six as the static HTML.
+// Used only when products.js is missing or broken. Same six as the static HTML (pitches come from the dictionary).
 const FALLBACK = [
-  { id: 'halos-off-hoodie', name: "halo's off hoodie", pitch: 'tiny horns stitched on the hood.', niche: 'wear', art: 'hoodie' },
-  { id: 'secret-no-1', name: 'secret no. 1', pitch: 'warm amber, a little smoke. signature.', niche: 'scent', art: 'perfume-secret' },
-  { id: 'little-devil-earbuds', name: 'little devil earbuds', pitch: 'horned pocket case. nobody knows what is playing.', niche: 'tech', art: 'earbuds' },
-  { id: 'nice-guy-long-story-tee', name: 'nice guy, long story tee', pitch: 'red shadow peeking from the pocket.', niche: 'wear', art: 'tee' },
-  { id: 'after-midnight', name: 'after midnight', pitch: 'oud and leather. for the hours nobody asks about.', niche: 'scent', art: 'perfume-midnight' },
-  { id: 'night-shift-lamp', name: 'night shift lamp', pitch: 'one dial, angel white to devil red.', niche: 'tech', art: 'lamp' },
+  { id: 'halos-off-hoodie', name: "halo's off hoodie", niche: 'wear', art: 'hoodie' },
+  { id: 'secret-no-1', name: 'secret no. 1', niche: 'scent', art: 'perfume-secret' },
+  { id: 'little-devil-earbuds', name: 'little devil earbuds', niche: 'tech', art: 'earbuds' },
+  { id: 'nice-guy-long-story-tee', name: 'nice guy, long story tee', niche: 'wear', art: 'tee' },
+  { id: 'after-midnight', name: 'after midnight', niche: 'scent', art: 'perfume-midnight' },
+  { id: 'night-shift-lamp', name: 'night shift lamp', niche: 'tech', art: 'lamp' },
 ];
 const NICHE_ORDER = ['wear', 'scent', 'tech'];
 
@@ -70,17 +71,17 @@ function pickSix(list) {
 }
 function cardHtml(p, fmt) {
   const badges = [];
-  if (p.status === 'soon') badges.push(`<span class="c-badge c-badge--soon">${esc(STR.soon)}</span>`);
-  if (p.status === 'sold') badges.push(`<span class="c-badge c-badge--sold">${esc(STR.sold)}</span>`);
+  if (p.status === 'soon') badges.push(`<span class="c-badge c-badge--soon" data-i18n="common.soon">${esc(STR.soon)}</span>`);
+  if (p.status === 'sold') badges.push(`<span class="c-badge c-badge--sold" data-i18n="common.sold">${esc(STR.sold)}</span>`);
   const hasPrice = Number.isFinite(Number(p.price)) && p.price !== null && p.price !== undefined;
   const foot = hasPrice
-    ? `<div class="c-card__foot"><span>${esc(fmt(p.price, p.currency || 'EUR'))}</span>${p.sample ? `<span class="c-badge c-badge--sample">${esc(STR.sample)}</span>` : ''}</div>`
+    ? `<div class="c-card__foot"><span translate="no">${esc(fmt(p.price, p.currency || 'EUR'))}</span>${p.sample ? `<span class="c-badge c-badge--sample" data-i18n="common.sample">${esc(STR.sample)}</span>` : ''}</div>`
     : '';
   return `<div class="h-feat__item"><article class="c-card" data-devil data-tilt="6" data-cursor="view" data-niche="${esc(p.niche)}">
 <div class="c-card__media">${badges.length ? `<div class="c-card__badges">${badges.join('')}</div>` : ''}${art(p.art, p.name)}</div>
-<div class="c-card__body"><p class="h-feat__niche">${esc(p.niche)}</p>
-<h3 class="c-card__title"><a class="c-card__link" href="product.html?id=${encodeURIComponent(p.id)}">${esc(p.name)}</a></h3>
-<p class="c-card__text">${esc(p.pitch || p.tagline || '')}</p>${foot}</div>
+<div class="c-card__body"><p class="h-feat__niche" data-i18n="niche.${esc(p.niche)}">${esc(t(`niche.${p.niche}`))}</p>
+<h3 class="c-card__title"><a class="c-card__link" href="product.html?id=${encodeURIComponent(p.id)}" translate="no">${esc(p.name)}</a></h3>
+<p class="c-card__text" data-i18n="products.${esc(p.id)}.pitch">${esc(t(`products.${p.id}.pitch`))}</p>${foot}</div>
 </article></div>`;
 }
 async function renderFeatured() {
@@ -102,6 +103,25 @@ function webglOk() {
     return !!(window.WebGLRenderingContext && (c.getContext('webgl2') || c.getContext('webgl')));
   } catch (err) { return false; }
 }
+/** Shrinks the hero headline until its widest line fits (it is `nowrap` by design). Any language, any length. */
+function fitHeadline(hero) {
+  const title = $('.h-hero__title', hero);
+  const content = $('.h-hero__content', hero);
+  if (!title || !content) return;
+  // measure at a small probe size first: at full size an over-long line would widen the column it is measured against
+  const PROBE = 20;
+  title.style.fontSize = '';
+  const natural = parseFloat(getComputedStyle(title).fontSize) || 0;
+  title.style.fontSize = `${PROBE}px`;
+  const room = content.clientWidth * (window.innerWidth >= 768 ? 0.6 : 1);
+  const lines = $$('.h-hero__line', title).filter((n) => n.offsetWidth);
+  const need = Math.max(0, ...lines.map((n) => { n.style.inlineSize = 'max-content'; const w = n.offsetWidth; n.style.inlineSize = ''; return w; }));
+  title.style.fontSize = '';
+  if (!need || !room || !natural) return;
+  const widest = Math.floor(((PROBE * room) / need) * 0.985 * 100) / 100;
+  if (widest < natural) title.style.fontSize = `${Math.max(18, widest)}px`;
+}
+
 function initHero({ gsap, reduced, fine }) {
   const hero = $('[data-hero]');
   if (!hero) return;
@@ -119,23 +139,28 @@ function initHero({ gsap, reduced, fine }) {
     }).catch((err) => { console.warn('[tcd:home] hero3d', err); });
     if ('requestIdleCallback' in window) window.requestIdleCallback(start, { timeout: 1200 }); else setTimeout(start, 300);
   }
+  // the headline never wraps, so long translations are scaled down to the room they have
+  const fit = () => safe(() => fitHeadline(hero));
+  fit();
+  window.addEventListener('resize', fit, { passive: true });
+  document.addEventListener('tcd:lang', fit);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+  // web fonts swap in late and change the width: measure again whenever the headline's box changes
+  const heroTitle = $('.h-hero__title', hero);
+  if (heroTitle && 'ResizeObserver' in window) new ResizeObserver(fit).observe(heroTitle);
   if (reduced) return;
 
   hero.classList.add('is-scene');
   const title = $('.h-hero__title', hero);
-  const scope = (title && title.querySelector('[aria-hidden="true"]')) || title;
-  const a = scope && scope.querySelector('.h-hero__line--a');
-  const b = scope && scope.querySelector('.h-hero__line--b');
   const content = $('.h-hero__content', hero);
   const lower = $('.h-hero__lower', hero);
   const ledeA = $('.h-hero__lede--a', hero);
   const ledeB = $('.h-hero__lede--b', hero);
   const hint = $('.h-hero__hint', hero);
   const badge = $('.h-hero__badge', hero);
-  if (!a || !b || !content || !lower) return;
+  if (!title || !content || !lower) return;
 
   const headerH = () => { const h = $('[data-shell="header"]'); return h ? h.offsetHeight : 0; };
-  const shift = () => a.offsetHeight;
   const state = { p: 0 };
   const apply = () => {
     progress = state.p;
@@ -143,23 +168,40 @@ function initHero({ gsap, reduced, fine }) {
     if (orb) orb.setProgress(state.p);
   };
 
-  const tl = gsap.timeline({
-    defaults: { ease: 'power2.inOut' },
-    scrollTrigger: { trigger: hero, start: () => `top ${headerH()}px`, end: 'bottom bottom', scrub: 0.6, invalidateOnRefresh: true },
-  });
-  tl.to(state, { p: 1, duration: 1, ease: 'none', onUpdate: apply }, 0);
-  if (hint) tl.to(hint, { opacity: 0, duration: 0.08 }, 0);
-  tl.to(a, { xPercent: -24, rotation: -5, opacity: 0, transformOrigin: '0% 100%', duration: 0.36 }, 0.06);
-  tl.to(content, { y: () => shift() / 2, duration: 0.5 }, 0.06);
-  tl.to(b, { y: () => -shift(), duration: 0.5 }, 0.06);
-  tl.to(lower, { y: () => -shift(), duration: 0.5 }, 0.06);
-  if (ledeA && ledeB) {
-    tl.to(ledeA, { opacity: 0, duration: 0.12 }, 0.28);
-    tl.to(ledeB, { opacity: 1, duration: 0.14 }, 0.42);
-  }
-  if (badge) tl.to(badge, { rotation: 300, duration: 1, ease: 'none' }, 0);
-  // hold the finished frame for the last stretch, then let it scroll away
-  tl.to({}, { duration: 0.01 }, 0.99);
+  // The two headline lines live inside the split copy, and a language change replaces them.
+  // So the scene is (re)built from whatever lines exist now, with any text length:
+  // every distance is measured from the first line's real height at refresh time.
+  let tl = null;
+  const build = () => {
+    if (tl) { if (tl.scrollTrigger) tl.scrollTrigger.kill(); tl.kill(); tl = null; }
+    gsap.set([content, lower, ledeA, ledeB, hint].filter(Boolean), { clearProps: 'transform,opacity' });
+    const scope = title.querySelector('[aria-hidden="true"]') || title;
+    const a = scope.querySelector('.h-hero__line--a');
+    const b = scope.querySelector('.h-hero__line--b');
+    if (!a || !b) return;
+    const rtl = document.documentElement.dir === 'rtl';
+    const shift = () => a.offsetHeight;
+    tl = gsap.timeline({
+      defaults: { ease: 'power2.inOut' },
+      scrollTrigger: { trigger: hero, start: () => `top ${headerH()}px`, end: 'bottom bottom', scrub: 0.6, invalidateOnRefresh: true },
+    });
+    tl.to(state, { p: 1, duration: 1, ease: 'none', onUpdate: apply }, 0);
+    if (hint) tl.to(hint, { opacity: 0, duration: 0.08 }, 0);
+    // the first line leaves towards the side the text starts on
+    tl.to(a, { xPercent: rtl ? 24 : -24, rotation: rtl ? 5 : -5, opacity: 0, transformOrigin: rtl ? '100% 100%' : '0% 100%', duration: 0.36 }, 0.06);
+    tl.to(content, { y: () => shift() / 2, duration: 0.5 }, 0.06);
+    tl.to(b, { y: () => -shift(), duration: 0.5 }, 0.06);
+    tl.to(lower, { y: () => -shift(), duration: 0.5 }, 0.06);
+    if (ledeA && ledeB) {
+      tl.to(ledeA, { opacity: 0, duration: 0.12 }, 0.28);
+      tl.to(ledeB, { opacity: 1, duration: 0.14 }, 0.42);
+    }
+    if (badge) tl.fromTo(badge, { rotation: 0 }, { rotation: 300, duration: 1, ease: 'none' }, 0);
+    // hold the finished frame for the last stretch, then let it scroll away
+    tl.to({}, { duration: 0.01 }, 0.99);
+  };
+  build();
+  document.addEventListener('tcd:lang', () => { safe(build); refresh(); });
 
   // pointer: spotlight, a small drift on the headline, and the fallback orb's eyes
   if (fine && title) {
@@ -228,14 +270,22 @@ function enter({ gsap, ScrollTrigger }, items, kind, stagger = 0.09) {
 
 /* ------------------------------------------------------------------ manifesto */
 function initManifesto({ gsap }) {
-  $$('[data-mani]').forEach((el) => {
-    const s = split(el, 'words');
-    if (!s.words.length) return;
-    gsap.fromTo(s.words, { opacity: 0.14 }, {
-      opacity: 1, ease: 'none', stagger: 0.12,
-      scrollTrigger: { trigger: el, start: 'top 82%', end: 'bottom 48%', scrub: 0.5 },
+  let tweens = [];
+  const build = () => {
+    tweens.forEach((tw) => { if (tw.scrollTrigger) tw.scrollTrigger.kill(); tw.kill(); });
+    tweens = [];
+    $$('[data-mani]').forEach((el) => {
+      const s = split(el, 'words');
+      if (!s.words.length) return;
+      tweens.push(gsap.fromTo(s.words, { opacity: 0.14 }, {
+        opacity: 1, ease: 'none', stagger: 0.12,
+        scrollTrigger: { trigger: el, start: 'top 82%', end: 'bottom 48%', scrub: 0.5 },
+      }));
     });
-  });
+  };
+  build();
+  // a new language un-splits the paragraph (motion.js): split the new words and scrub them again
+  document.addEventListener('tcd:lang', () => safe(build));
 }
 
 /* ------------------------------------------------------------------ spotlights */
@@ -357,7 +407,8 @@ function initTouchTilt({ gsap }) {
 function initWordmark({ gsap, ScrollTrigger, fine }) {
   const word = $('[data-wordmark]');
   if (!word) return;
-  const chars = split(word, 'chars').chars;
+  const done = split(word, 'chars');
+  const chars = done.chars.length ? done.chars : done.targets; // shaped scripts animate word by word
   if (!chars.length) return;
   gsap.from(chars, {
     yPercent: 85, rotation: (i) => (i % 2 ? 9 : -9), ease: 'power2.out', stagger: 0.06,

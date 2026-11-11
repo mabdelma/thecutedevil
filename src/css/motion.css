@@ -22,6 +22,10 @@ html.motion [data-split]:not(.is-split) { visibility: hidden; }
 .c-marquee__track { display: flex; flex: none; }
 html.motion .c-marquee__track { will-change: transform; }
 .c-marquee__group { display: flex; flex: none; align-items: center; gap: var(--marquee-gap, 2rem); padding-inline-end: var(--marquee-gap, 2rem); }
+/* The track is moved in physical pixels, so the row itself is laid out left-to-right in every language;
+   each item keeps the page direction for its own text. motion.js reverses the travel on RTL pages. */
+html.motion[dir='rtl'] [data-marquee] { direction: ltr; }
+html.motion[dir='rtl'] .c-marquee__group > * { direction: rtl; }
 html:not(.motion) [data-marquee] { flex-wrap: wrap; white-space: normal; }
 html:not(.motion) .c-marquee__track, html:not(.motion) .c-marquee__group { flex-wrap: wrap; flex: 0 1 auto; }
 

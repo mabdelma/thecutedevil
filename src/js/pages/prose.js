@@ -1,12 +1,14 @@
 // The Cute Devil: long-form pages (faq, shipping, terms, privacy, cookies, legal). Owner: pages.
 // Everything here is an enhancement: the pages read and work without it (real anchors, real <details>).
-const STR = {
-  cleared: 'Done. Your saved theme and bag were removed from this device.',
-  clearedEmpty: 'Nothing was saved on this device. It is still clean.',
-  clearFailed: 'Your browser blocked access to storage. Please clear the site data from your browser settings.',
-};
+import { t, strings, getLang, ready as i18nReady } from '../i18n.js';
 
-const KEYS = ['tcd:theme', 'tcd:cart'];
+const STR = strings({
+  cleared: 'prose.cleared',
+  clearedEmpty: 'prose.clearedEmpty',
+  clearFailed: 'prose.clearFailed',
+});
+
+const KEYS = ['tcd:theme', 'tcd:cart', 'tcd:lang'];
 const DEFAULT_THEME = 'cream';
 const wide = window.matchMedia('(min-width: 64em)');
 
@@ -98,7 +100,43 @@ function initClear() {
   });
 }
 
+/* ---------------------------------------------------------------- "#" links next to headings: label follows the heading text */
+function initAnchors() {
+  const paint = () => {
+    document.querySelectorAll('.c-anchor').forEach((a) => {
+      const heading = a.parentElement;
+      if (!heading || heading.closest('[lang="en"]:not(html)')) return; // English-only bodies keep their own labels
+      const title = Array.from(heading.childNodes).filter((n) => n !== a).map((n) => n.textContent).join(' ').replace(/\s+/g, ' ').trim();
+      a.setAttribute('aria-label', t('prose.anchor', { title }));
+    });
+  };
+  document.addEventListener('tcd:lang', paint);
+  i18nReady.then(paint);
+}
+
+/* ---------------------------------------------------------------- legal pages: the body is English only, say so in the reader's language */
+function initLangNote() {
+  const body = document.querySelector('[data-prose][lang="en"]');
+  const head = document.querySelector('.c-prosehead .c-container');
+  if (!body || !head) return;
+  const paint = () => {
+    let note = head.querySelector('.c-langnote');
+    if (getLang() === 'en') { if (note) note.remove(); return; }
+    if (!note) {
+      note = document.createElement('p');
+      note.className = 'c-langnote';
+      note.setAttribute('data-i18n', 'prose.englishOnly');
+      head.appendChild(note);
+    }
+    note.textContent = t('prose.englishOnly');
+  };
+  document.addEventListener('tcd:lang', paint);
+  i18nReady.then(paint);
+}
+
 function init() {
+  initAnchors();
+  initLangNote();
   initToc();
   initFaq();
   initClear();

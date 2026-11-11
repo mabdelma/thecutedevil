@@ -3,17 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Wear, scent and tech with a hidden side · The Cute Devil</title>
-<meta name="description" content="The Cute Devil is one name with three sides: clothes, scents and gadgets that look sweet and keep something back. Open the shop and find out.">
+<title data-i18n="home.meta.title">Wear, scent and tech with a hidden side · The Cute Devil</title>
+<meta name="description" content="The Cute Devil is one name with three sides: clothes, scents and gadgets that look sweet and keep something back. Open the shop and find out." data-i18n-attr="content:home.meta.description">
+<meta name="author" content="Mohamed Khedr Mohamed Abdelmaged">
 <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
-<script>(function(d){d.classList.remove('no-js');d.classList.add('js');try{var t=localStorage.getItem('tcd:theme');if(t)d.setAttribute('data-theme',t)}catch(e){}})(document.documentElement)</script>
+<script>(function(d){d.classList.remove('no-js');d.classList.add('js');try{var t=localStorage.getItem('tcd:theme');if(t)d.setAttribute('data-theme',t)}catch(e){}try{var L='en zh es fr ar pt ru de ja hi it'.split(' '),s=location.search,q=(s.match(/[?&]lang=([a-zA-Z]{2})/)||[])[1],c=[q],l='en',i,k;try{c.push(localStorage.getItem('tcd:lang'))}catch(e){}c=c.concat(navigator.languages||[navigator.language]);for(i=0;i<c.length;i++){k=String(c[i]||'').toLowerCase().slice(0,2);if(L.indexOf(k)>-1){l=k;break}}d.lang=l;d.dir=l==='ar'?'rtl':'ltr';if(l!=='en'||/[?&]pseudo=1/.test(s)){d.classList.add('i18n-wait');setTimeout(function(){d.classList.remove('i18n-wait')},2500)}}catch(e){}})(document.documentElement)</script>
 <link rel="stylesheet" href="./src/css/tokens.css">
 <link rel="stylesheet" href="./src/css/base.css">
 <link rel="stylesheet" href="./src/css/motion.css">
 <link rel="stylesheet" href="./src/css/home.css">
 </head>
 <body data-page="home">
-<a class="u-skip" href="#main">Skip to content</a>
+<a class="u-skip" href="#main" data-i18n="shell.skip">Skip to content</a>
 <header data-shell="header"><a href="index.html">the cute devil</a> <a href="shop.html">shop</a></header>
 <main id="main">
 
@@ -55,23 +56,23 @@
       </div>
 
       <div class="c-container h-hero__content">
-        <p class="c-eyebrow" data-reveal="fade">wear · scent · tech</p>
+        <p class="c-eyebrow" data-reveal="fade" data-i18n="home.hero.eyebrow">wear · scent · tech</p>
         <h1 class="h-hero__title" id="hero-title" data-split="chars">
-          <span class="h-hero__line h-hero__line--a">charming <br> outside.</span>
-          <span class="h-hero__line h-hero__line--b">mysterious <br> inside.</span>
+          <span class="h-hero__line h-hero__line--a" data-i18n-html="home.hero.line1">charming <br> outside.</span>
+          <span class="h-hero__line h-hero__line--b" data-i18n-html="home.hero.line2">mysterious <br> inside.</span>
         </h1>
         <div class="h-hero__lower">
           <div class="h-hero__ledes" data-reveal="up" data-delay="0.5">
-            <p class="c-lede h-hero__lede h-hero__lede--a">One name, three sides. Clothes, scents and gadgets that look sweet and keep something back.</p>
-            <p class="c-lede h-hero__lede h-hero__lede--b">Look closer. Everything here has a little devil behind it.</p>
+            <p class="c-lede h-hero__lede h-hero__lede--a" data-i18n="home.hero.lede1">One name, three sides. Clothes, scents and gadgets that look sweet and keep something back.</p>
+            <p class="c-lede h-hero__lede h-hero__lede--b" data-i18n="home.hero.lede2">Look closer. Everything here has a little devil behind it.</p>
           </div>
           <div class="u-cluster h-hero__cta" data-reveal="up" data-delay="0.65">
             <a class="c-btn c-btn--primary c-btn--lg" href="shop.html" data-magnetic="0.35" data-devil>
-              <span class="c-btn__label">open the shop
+              <span class="c-btn__label" data-i18n="common.openShop">open the shop
                 <svg class="c-btn__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
               </span>
             </a>
-            <a class="c-btn c-btn--ghost c-btn--lg" href="story.html"><span class="c-btn__label">the story</span></a>
+            <a class="c-btn c-btn--ghost c-btn--lg" href="story.html"><span class="c-btn__label" data-i18n="home.hero.ctaStory">the story</span></a>
           </div>
         </div>
       </div>
@@ -79,22 +80,22 @@
       <div class="h-hero__badge" aria-hidden="true">
         <svg class="h-hero__badge-ring" viewBox="0 0 200 200" focusable="false">
           <defs><path id="h-badge-path" d="M100 100m-78 0a78 78 0 1 1 156 0a78 78 0 1 1-156 0"/></defs>
-          <text><textPath href="#h-badge-path" textLength="478" lengthAdjust="spacing">there is more to it ✦ keep scrolling ✦ there is more to it ✦ keep going ✦</textPath></text>
+          <text><textPath href="#h-badge-path" textLength="478" lengthAdjust="spacing" data-i18n="home.hero.ring">there is more to it ✦ keep scrolling ✦ there is more to it ✦ keep going ✦</textPath></text>
         </svg>
         <svg class="h-hero__badge-horns" viewBox="0 0 64 40" focusable="false"><path d="M8 38C0 22 4 8 14 0c0 16 6 28 20 38z"/><path d="M56 38c8-16 4-30-6-38 0 16-6 28-20 38z"/></svg>
       </div>
 
-      <p class="h-hero__hint" aria-hidden="true"><span></span>scroll. there is more.</p>
+      <p class="h-hero__hint" aria-hidden="true" data-i18n="home.hero.hint"><span></span>scroll. there is more.</p>
     </div>
   </section>
 
   <!-- marquee band: speed and skew follow scroll velocity -->
   <div class="h-band" aria-hidden="true">
     <div class="h-band__row h-band__row--a" data-marquee="70">
-      <span>charming</span><i></i><span>mysterious</span><i></i><span>wear</span><i></i><span>scent</span><i></i><span>tech</span><i></i><span>more than it shows</span><i></i>
+      <span data-i18n="home.band.text1">charming</span><i></i><span data-i18n="home.band.text2">mysterious</span><i></i><span data-i18n="niche.wear">wear</span><i></i><span data-i18n="niche.scent">scent</span><i></i><span data-i18n="niche.tech">tech</span><i></i><span data-i18n="home.band.text3">more than it shows</span><i></i>
     </div>
     <div class="h-band__row h-band__row--b" data-marquee="-50">
-      <span>the cute devil</span><i></i><span>look closer</span><i></i><span>a hidden side</span><i></i><span>keep the secret</span><i></i><span>one name</span><i></i>
+      <span translate="no">the cute devil</span><i></i><span data-i18n="home.band.text4">look closer</span><i></i><span data-i18n="home.band.text5">a hidden side</span><i></i><span data-i18n="home.band.text6">keep the secret</span><i></i><span data-i18n="home.band.text7">one name</span><i></i>
     </div>
   </div>
 
@@ -102,8 +103,8 @@
   <section class="c-section h-trio" aria-labelledby="trio-title">
     <div class="c-container">
       <header class="c-section__head">
-        <p class="c-eyebrow" data-reveal="fade">three niches</p>
-        <h2 id="trio-title" data-split="words">three sides of the <span class="u-accent">same secret.</span></h2>
+        <p class="c-eyebrow" data-reveal="fade" data-i18n="home.trio.eyebrow">three niches</p>
+        <h2 id="trio-title" data-split="words" data-i18n-html="home.trio.title">three sides of the <span class="u-accent">same secret.</span></h2>
       </header>
       <ul class="h-trio__grid" data-enter="fan">
         <li class="h-trio__item">
@@ -112,9 +113,9 @@
             <span class="h-niche__art h-niche__art--back" data-art="cap" aria-hidden="true"></span>
             <span class="h-niche__art h-niche__art--main" data-art="hoodie" aria-hidden="true"></span>
             <span class="h-niche__body">
-              <span class="h-niche__name">wear</span>
-              <span class="h-niche__text">hoodies, tees, caps, socks.</span>
-              <span class="h-niche__go">see wear <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+              <span class="h-niche__name" data-i18n="niche.wear">wear</span>
+              <span class="h-niche__text" data-i18n="home.trio.text1">hoodies, tees, caps, socks.</span>
+              <span class="h-niche__go" data-i18n="home.trio.go1">see wear <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
             </span>
           </a>
         </li>
@@ -124,9 +125,9 @@
             <span class="h-niche__art h-niche__art--back" data-art="perfume-sweet" aria-hidden="true"></span>
             <span class="h-niche__art h-niche__art--main" data-art="perfume-secret" aria-hidden="true"></span>
             <span class="h-niche__body">
-              <span class="h-niche__name">scent</span>
-              <span class="h-niche__text">four perfumes, four moods.</span>
-              <span class="h-niche__go">see scent <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+              <span class="h-niche__name" data-i18n="niche.scent">scent</span>
+              <span class="h-niche__text" data-i18n="home.trio.text2">four perfumes, four moods.</span>
+              <span class="h-niche__go" data-i18n="home.trio.go2">see scent <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
             </span>
           </a>
         </li>
@@ -136,9 +137,9 @@
             <span class="h-niche__art h-niche__art--back" data-art="powerbank" aria-hidden="true"></span>
             <span class="h-niche__art h-niche__art--main" data-art="earbuds" aria-hidden="true"></span>
             <span class="h-niche__body">
-              <span class="h-niche__name">tech</span>
-              <span class="h-niche__text">they look innocent. look again.</span>
-              <span class="h-niche__go">see tech <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+              <span class="h-niche__name" data-i18n="niche.tech">tech</span>
+              <span class="h-niche__text" data-i18n="home.trio.text3">they look innocent. look again.</span>
+              <span class="h-niche__go" data-i18n="home.trio.go3">see tech <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
             </span>
           </a>
         </li>
@@ -150,10 +151,10 @@
   <section class="c-section c-section--surface h-mani" aria-labelledby="mani-title">
     <div class="c-container h-mani__inner">
       <header class="h-mani__head">
-        <p class="c-eyebrow" data-reveal="fade">the idea</p>
-        <h2 id="mani-title" data-split="words">one name. <span class="u-accent">more than it shows.</span></h2>
+        <p class="c-eyebrow" data-reveal="fade" data-i18n="common.idea">the idea</p>
+        <h2 id="mani-title" data-split="words" data-i18n-html="home.mani.title">one name. <span class="u-accent">more than it shows.</span></h2>
       </header>
-      <p class="h-mani__text" data-mani>The cute devil is the nice one in the room, with <em>a little shadow</em> behind him. So we make things the same way: clothes with <span class="u-nowrap"><em>a wink</em>,</span> scents that <span class="u-nowrap"><em>keep a secret</em>,</span> gadgets with <span class="u-nowrap"><em>a hidden side</em>.</span> Charming at first look. <span class="u-nowrap"><em>More</em>,</span> the longer you stay.</p>
+      <p class="h-mani__text" data-mani data-i18n-html="home.mani.text">The cute devil is the nice one in the room, with <em>a little shadow</em> behind him. So we make things the same way: clothes with <span class="u-nowrap"><em>a wink</em>,</span> scents that <span class="u-nowrap"><em>keep a secret</em>,</span> gadgets with <span class="u-nowrap"><em>a hidden side</em>.</span> Charming at first look. <span class="u-nowrap"><em>More</em>,</span> the longer you stay.</p>
     </div>
   </section>
 
@@ -162,36 +163,36 @@
     <div class="c-container">
       <header class="c-section__head c-section__head--split">
         <div class="u-stack">
-          <p class="c-eyebrow" data-reveal="fade">featured</p>
-          <h2 id="feat-title" data-split="words">fresh from <span class="u-accent">the shadows</span></h2>
+          <p class="c-eyebrow" data-reveal="fade" data-i18n="home.feat.eyebrow">featured</p>
+          <h2 id="feat-title" data-split="words" data-i18n-html="home.feat.title">fresh from <span class="u-accent">the shadows</span></h2>
         </div>
-        <a class="c-btn c-btn--ghost" href="shop.html" data-reveal="fade"><span class="c-btn__label">see everything
+        <a class="c-btn c-btn--ghost" href="shop.html" data-reveal="fade"><span class="c-btn__label" data-i18n="home.feat.cta">see everything
           <svg class="c-btn__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
       </header>
       <div class="h-feat__grid" data-featured>
         <div class="h-feat__item"><article class="c-card" data-devil data-tilt="6" data-cursor="view">
           <div class="c-card__media" data-art="hoodie" data-art-title="halo's off hoodie"></div>
-          <div class="c-card__body"><p class="h-feat__niche">wear</p><h3 class="c-card__title"><a class="c-card__link" href="product.html?id=halos-off-hoodie">halo's off hoodie</a></h3><p class="c-card__text">tiny horns stitched on the hood.</p></div>
+          <div class="c-card__body"><p class="h-feat__niche" data-i18n="niche.wear">wear</p><h3 class="c-card__title"><a class="c-card__link" href="product.html?id=halos-off-hoodie" translate="no">halo's off hoodie</a></h3><p class="c-card__text" data-i18n="products.halos-off-hoodie.pitch">tiny horns stitched on the hood.</p></div>
         </article></div>
         <div class="h-feat__item"><article class="c-card" data-devil data-tilt="6" data-cursor="view">
           <div class="c-card__media" data-art="perfume-secret" data-art-title="secret no. 1"></div>
-          <div class="c-card__body"><p class="h-feat__niche">scent</p><h3 class="c-card__title"><a class="c-card__link" href="product.html?id=secret-no-1">secret no. 1</a></h3><p class="c-card__text">warm amber, a little smoke. signature.</p></div>
+          <div class="c-card__body"><p class="h-feat__niche" data-i18n="niche.scent">scent</p><h3 class="c-card__title"><a class="c-card__link" href="product.html?id=secret-no-1" translate="no">secret no. 1</a></h3><p class="c-card__text" data-i18n="products.secret-no-1.pitch">warm amber, a little smoke. signature.</p></div>
         </article></div>
         <div class="h-feat__item"><article class="c-card" data-devil data-tilt="6" data-cursor="view">
           <div class="c-card__media" data-art="earbuds" data-art-title="little devil earbuds"></div>
-          <div class="c-card__body"><p class="h-feat__niche">tech</p><h3 class="c-card__title"><a class="c-card__link" href="product.html?id=little-devil-earbuds">little devil earbuds</a></h3><p class="c-card__text">horned pocket case. nobody knows what is playing.</p></div>
+          <div class="c-card__body"><p class="h-feat__niche" data-i18n="niche.tech">tech</p><h3 class="c-card__title"><a class="c-card__link" href="product.html?id=little-devil-earbuds" translate="no">little devil earbuds</a></h3><p class="c-card__text" data-i18n="products.little-devil-earbuds.pitch">horned pocket case. nobody knows what is playing.</p></div>
         </article></div>
         <div class="h-feat__item"><article class="c-card" data-devil data-tilt="6" data-cursor="view">
           <div class="c-card__media" data-art="tee" data-art-title="nice guy, long story tee"></div>
-          <div class="c-card__body"><p class="h-feat__niche">wear</p><h3 class="c-card__title"><a class="c-card__link" href="product.html?id=nice-guy-long-story-tee">nice guy, long story tee</a></h3><p class="c-card__text">red shadow peeking from the pocket.</p></div>
+          <div class="c-card__body"><p class="h-feat__niche" data-i18n="niche.wear">wear</p><h3 class="c-card__title"><a class="c-card__link" href="product.html?id=nice-guy-long-story-tee" translate="no">nice guy, long story tee</a></h3><p class="c-card__text" data-i18n="products.nice-guy-long-story-tee.pitch">red shadow peeking from the pocket.</p></div>
         </article></div>
         <div class="h-feat__item"><article class="c-card" data-devil data-tilt="6" data-cursor="view">
           <div class="c-card__media" data-art="perfume-midnight" data-art-title="after midnight"></div>
-          <div class="c-card__body"><p class="h-feat__niche">scent</p><h3 class="c-card__title"><a class="c-card__link" href="product.html?id=after-midnight">after midnight</a></h3><p class="c-card__text">oud and leather. for the hours nobody asks about.</p></div>
+          <div class="c-card__body"><p class="h-feat__niche" data-i18n="niche.scent">scent</p><h3 class="c-card__title"><a class="c-card__link" href="product.html?id=after-midnight" translate="no">after midnight</a></h3><p class="c-card__text" data-i18n="products.after-midnight.pitch">oud and leather. for the hours nobody asks about.</p></div>
         </article></div>
         <div class="h-feat__item"><article class="c-card" data-devil data-tilt="6" data-cursor="view">
           <div class="c-card__media" data-art="lamp" data-art-title="night shift lamp"></div>
-          <div class="c-card__body"><p class="h-feat__niche">tech</p><h3 class="c-card__title"><a class="c-card__link" href="product.html?id=night-shift-lamp">night shift lamp</a></h3><p class="c-card__text">one dial, angel white to devil red.</p></div>
+          <div class="c-card__body"><p class="h-feat__niche" data-i18n="niche.tech">tech</p><h3 class="c-card__title"><a class="c-card__link" href="product.html?id=night-shift-lamp" translate="no">night shift lamp</a></h3><p class="c-card__text" data-i18n="products.night-shift-lamp.pitch">one dial, angel white to devil red.</p></div>
         </article></div>
       </div>
     </div>
@@ -199,13 +200,13 @@
 
   <!-- 5. WEAR: parallax layers -->
   <section class="c-section h-spot h-wear" aria-labelledby="wear-title">
-    <p class="h-spot__ghost" data-drift="-1" aria-hidden="true">wear wear wear</p>
+    <p class="h-spot__ghost" data-drift="-1" aria-hidden="true" data-i18n="home.wear.ghost">wear wear wear</p>
     <div class="c-container h-spot__grid">
       <div class="h-spot__copy u-stack u-stack--lg">
-        <p class="c-eyebrow" data-reveal="fade">01 · wear</p>
-        <h2 id="wear-title" data-split="words" data-dur="0.6">dress like you <span class="u-accent">know something.</span></h2>
-        <p class="c-lede" data-reveal="up">Clean from across the room. Up close there is always a small detail: horns stitched on a hood, a shadow peeking from a pocket.</p>
-        <div data-reveal="up"><a class="c-btn c-btn--ghost" href="shop.html?niche=wear" data-devil><span class="c-btn__label">shop wear
+        <p class="c-eyebrow" data-reveal="fade" data-i18n="home.wear.eyebrow">01 · wear</p>
+        <h2 id="wear-title" data-split="words" data-dur="0.6" data-i18n-html="home.wear.title">dress like you <span class="u-accent">know something.</span></h2>
+        <p class="c-lede" data-reveal="up" data-i18n="home.wear.lede">Clean from across the room. Up close there is always a small detail: horns stitched on a hood, a shadow peeking from a pocket.</p>
+        <div data-reveal="up"><a class="c-btn c-btn--ghost" href="shop.html?niche=wear" data-devil><span class="c-btn__label" data-i18n="home.wear.cta">shop wear
           <svg class="c-btn__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a></div>
       </div>
       <div class="h-wear__stage" aria-hidden="true">
@@ -221,10 +222,10 @@
   <section class="c-section c-section--surface h-spot h-scent" aria-labelledby="scent-title">
     <div class="c-container h-spot__grid h-spot__grid--flip">
       <div class="h-spot__copy u-stack u-stack--lg">
-        <p class="c-eyebrow" data-reveal="fade">02 · scent</p>
-        <h2 id="scent-title" data-split="words" data-dur="0.6">smell like <span class="u-accent">a secret.</span></h2>
-        <p class="c-lede" data-reveal="up">Amber and smoke. Vanilla, then pink pepper. Oud and leather for the late hours. The first note is the polite one.</p>
-        <div data-reveal="up"><a class="c-btn c-btn--ghost" href="shop.html?niche=scent" data-devil><span class="c-btn__label">shop scent
+        <p class="c-eyebrow" data-reveal="fade" data-i18n="home.scent.eyebrow">02 · scent</p>
+        <h2 id="scent-title" data-split="words" data-dur="0.6" data-i18n-html="home.scent.title">smell like <span class="u-accent">a secret.</span></h2>
+        <p class="c-lede" data-reveal="up" data-i18n="home.scent.lede">Amber and smoke. Vanilla, then pink pepper. Oud and leather for the late hours. The first note is the polite one.</p>
+        <div data-reveal="up"><a class="c-btn c-btn--ghost" href="shop.html?niche=scent" data-devil><span class="c-btn__label" data-i18n="home.scent.cta">shop scent
           <svg class="c-btn__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a></div>
       </div>
       <div class="h-scent__stage" aria-hidden="true" data-scent>
@@ -232,7 +233,7 @@
           <defs><path id="h-scent-path" d="M200 200m-178 0a178 178 0 1 1 356 0a178 178 0 1 1-356 0"/></defs>
           <circle cx="200" cy="200" r="198" class="h-scent__ring-line"/>
           <circle cx="200" cy="200" r="150" class="h-scent__ring-line h-scent__ring-line--dash"/>
-          <text><textPath href="#h-scent-path" textLength="1100" lengthAdjust="spacing">amber ✦ smoke ✦ vanilla ✦ pink pepper ✦ oud ✦ leather ✦ citrus ✦ musk ✦</textPath></text>
+          <text><textPath href="#h-scent-path" textLength="1100" lengthAdjust="spacing" data-i18n="home.scent.ring">amber ✦ smoke ✦ vanilla ✦ pink pepper ✦ oud ✦ leather ✦ citrus ✦ musk ✦</textPath></text>
         </svg>
         <div class="h-scent__orbit">
           <div class="h-scent__moon h-scent__moon--1"><div data-art="perfume-sweet"></div></div>
@@ -246,27 +247,27 @@
 
   <!-- 7. TECH: clip-path reveal of the hidden side -->
   <section class="c-section h-spot h-tech" aria-labelledby="tech-title">
-    <p class="h-spot__ghost" data-drift="1" aria-hidden="true">tech tech tech</p>
+    <p class="h-spot__ghost" data-drift="1" aria-hidden="true" data-i18n="home.tech.ghost">tech tech tech</p>
     <div class="c-container h-spot__grid">
       <div class="h-spot__copy u-stack u-stack--lg">
-        <p class="c-eyebrow" data-reveal="fade">03 · tech</p>
-        <h2 id="tech-title" data-split="words" data-dur="0.6">gadgets with <span class="u-accent">a hidden side.</span></h2>
-        <p class="c-lede" data-reveal="up">Earbuds in a horned pocket case. A lamp with one dial, from angel white to devil red. A cable with a pointed tip.</p>
-        <div data-reveal="up"><a class="c-btn c-btn--ghost" href="shop.html?niche=tech" data-devil><span class="c-btn__label">shop tech
+        <p class="c-eyebrow" data-reveal="fade" data-i18n="home.tech.eyebrow">03 · tech</p>
+        <h2 id="tech-title" data-split="words" data-dur="0.6" data-i18n-html="home.tech.title">gadgets with <span class="u-accent">a hidden side.</span></h2>
+        <p class="c-lede" data-reveal="up" data-i18n="home.tech.lede">Earbuds in a horned pocket case. A lamp with one dial, from angel white to devil red. A cable with a pointed tip.</p>
+        <div data-reveal="up"><a class="c-btn c-btn--ghost" href="shop.html?niche=tech" data-devil><span class="c-btn__label" data-i18n="home.tech.cta">shop tech
           <svg class="c-btn__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a></div>
       </div>
       <div class="h-tech__stage" aria-hidden="true" data-tech data-cursor="hide">
         <div class="h-tech__layer h-tech__layer--out">
-          <span class="h-tech__tag">outside</span>
+          <span class="h-tech__tag" data-i18n="common.outside">outside</span>
           <div class="h-tech__art h-tech__art--1" data-art="earbuds"></div>
           <div class="h-tech__art h-tech__art--2" data-art="lamp"></div>
         </div>
         <div class="h-tech__layer h-tech__layer--in">
-          <span class="h-tech__tag">inside</span>
+          <span class="h-tech__tag" data-i18n="common.inside">inside</span>
           <div class="h-tech__art h-tech__art--1" data-art="earbuds"></div>
           <div class="h-tech__art h-tech__art--2" data-art="lamp"></div>
-          <span class="h-tech__note h-tech__note--1">keeps a secret</span>
-          <span class="h-tech__note h-tech__note--2">one dial. two moods.</span>
+          <span class="h-tech__note h-tech__note--1" data-i18n="home.tech.note1">keeps a secret</span>
+          <span class="h-tech__note h-tech__note--2" data-i18n="home.tech.note2">one dial. two moods.</span>
         </div>
       </div>
     </div>
@@ -289,13 +290,14 @@
         <div class="h-founder__logo" data-logo></div>
       </div>
       <div class="h-founder__copy u-stack u-stack--lg">
-        <p class="c-eyebrow h-founder__eyebrow" data-reveal="fade">the founder</p>
-        <h2 id="founder-title" data-split="words">made by a nice guy. <span class="u-accent">there's more to him.</span></h2>
+        <p class="c-eyebrow h-founder__eyebrow" data-reveal="fade" data-i18n="common.founder">the founder</p>
+        <h2 id="founder-title" data-split="words" data-i18n-html="common.founderTitle">made by a nice guy. <span class="u-accent">there's more to him.</span></h2>
+        <p class="h-founder__name" data-reveal="fade" data-i18n="home.founder.name">Mohamed Khedr Mohamed Abdelmaged</p>
         <div class="u-stack" data-reveal="up">
-          <p class="h-founder__text">Mohamed is an engineer and an educator. He builds smart devices, and he teaches.</p>
-          <p class="h-founder__text">The Cute Devil is the other side: the place where he makes the things he actually wants to own.</p>
+          <p class="h-founder__text" data-i18n="home.founder.text1">Mohamed is an engineer and an educator. He builds smart devices, and he teaches.</p>
+          <p class="h-founder__text" data-i18n="home.founder.text2">The Cute Devil is the other side: the place where he makes the things he actually wants to own.</p>
         </div>
-        <div data-reveal="up"><a class="c-btn h-founder__btn" href="story.html" data-devil><span class="c-btn__label">read the story
+        <div data-reveal="up"><a class="c-btn h-founder__btn" href="story.html" data-devil><span class="c-btn__label" data-i18n="home.founder.cta">read the story
           <svg class="c-btn__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a></div>
       </div>
     </div>
@@ -305,8 +307,8 @@
   <section class="c-section h-how" aria-labelledby="how-title" data-how>
     <div class="c-container">
       <header class="c-section__head">
-        <p class="c-eyebrow" data-reveal="fade">how ordering works</p>
-        <h2 class="h-how__title" id="how-title"><span>pick.</span> <span>add.</span> <span>whatsapp.</span> <span>done.</span></h2>
+        <p class="c-eyebrow" data-reveal="fade" data-i18n="home.how.eyebrow">how ordering works</p>
+        <h2 class="h-how__title" id="how-title"><span data-i18n="home.how.word1">pick.</span> <span data-i18n="home.how.word2">add.</span> <span data-i18n="home.how.word3">whatsapp.</span> <span data-i18n="home.how.word4">done.</span></h2>
       </header>
       <div class="h-how__wrap">
         <div class="h-how__line" aria-hidden="true"><span></span></div>
@@ -314,45 +316,45 @@
           <li class="h-step">
             <span class="h-step__icon h-step__icon--pick" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="8" y="8" width="24" height="24" rx="6" opacity=".45"/><path class="h-step__move" d="M22 20l16 6-7 3-3 7z" fill="currentColor"/></svg></span>
             <span class="h-step__num" aria-hidden="true">01</span>
-            <h3 class="h-step__name">pick</h3>
-            <p class="h-step__text">Browse wear, scent and tech. Take your time.</p>
+            <h3 class="h-step__name" data-i18n="home.how.name1">pick</h3>
+            <p class="h-step__text" data-i18n="home.how.text1">Browse wear, scent and tech. Take your time.</p>
           </li>
           <li class="h-step">
             <span class="h-step__icon h-step__icon--add" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M10 18h28l-2.5 20a3 3 0 0 1-3 2.6h-17a3 3 0 0 1-3-2.6z"/><path d="M17 18v-3a7 7 0 0 1 14 0v3" opacity=".6"/><path class="h-step__move" d="M24 24v10M19 29h10"/></svg></span>
             <span class="h-step__num" aria-hidden="true">02</span>
-            <h3 class="h-step__name">add</h3>
-            <p class="h-step__text">Put it in your bag. No account, no password.</p>
+            <h3 class="h-step__name" data-i18n="home.how.name2">add</h3>
+            <p class="h-step__text" data-i18n="home.how.text2">Put it in your bag. No account, no password.</p>
           </li>
           <li class="h-step">
             <span class="h-step__icon h-step__icon--wa" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M24 7a17 17 0 0 0-14.6 25.7L7 41l8.6-2.3A17 17 0 1 0 24 7z"/><g class="h-step__move" fill="currentColor" stroke="none"><circle cx="17" cy="24" r="2.2"/><circle cx="24" cy="24" r="2.2"/><circle cx="31" cy="24" r="2.2"/></g></svg></span>
             <span class="h-step__num" aria-hidden="true">03</span>
-            <h3 class="h-step__name">whatsapp</h3>
-            <p class="h-step__text">Checkout writes your order as a WhatsApp message. You press send.</p>
+            <h3 class="h-step__name" data-i18n="home.how.name3">whatsapp</h3>
+            <p class="h-step__text" data-i18n="home.how.text3">Checkout writes your order as a WhatsApp message. You press send.</p>
           </li>
           <li class="h-step">
             <span class="h-step__icon h-step__icon--done" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M13 14C8 9 9 4 12 1c1 5 4 8 8 10M35 14c5-5 4-10 1-13-1 5-4 8-8 10" fill="currentColor" stroke="none"/><circle cx="24" cy="27" r="16"/><path class="h-step__move h-step__check" d="M16.5 27.5l5.5 5.5 10-11" pathLength="1"/></svg></span>
             <span class="h-step__num" aria-hidden="true">04</span>
-            <h3 class="h-step__name">done</h3>
-            <p class="h-step__text">The rest gets sorted in the chat, with you.</p>
+            <h3 class="h-step__name" data-i18n="home.how.name4">done</h3>
+            <p class="h-step__text" data-i18n="home.how.text4">The rest gets sorted in the chat, with you.</p>
           </li>
         </ol>
       </div>
-      <p class="h-how__note u-muted u-small" data-reveal="fade">Prices on the site are samples for now. Nothing is charged here.</p>
+      <p class="h-how__note u-muted u-small" data-reveal="fade" data-i18n="home.how.note">Prices on the site are samples for now. Nothing is charged here.</p>
     </div>
   </section>
 
   <!-- 10. CLOSING CTA -->
   <section class="c-section c-section--accent h-close" aria-labelledby="close-title" data-close>
     <div class="c-container h-close__inner">
-      <h2 class="u-display h-close__title" id="close-title" data-split="chars">go on. find out.</h2>
-      <p class="h-close__text" data-reveal="up">The shop is taking shape. The rest you will have to see for yourself.</p>
+      <h2 class="u-display h-close__title" id="close-title" data-split="chars" data-i18n="home.close.title">go on. find out.</h2>
+      <p class="h-close__text" data-reveal="up" data-i18n="home.close.text">The shop is taking shape. The rest you will have to see for yourself.</p>
       <div class="u-cluster h-close__cta" data-reveal="up" data-delay="0.1">
         <a class="c-btn c-btn--contrast c-btn--lg h-close__btn" href="shop.html" data-magnetic="0.45" data-devil>
-          <span class="c-btn__label">open the shop
+          <span class="c-btn__label" data-i18n="common.openShop">open the shop
             <svg class="c-btn__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
           </span>
         </a>
-        <a class="c-btn c-btn--text h-close__alt" href="contact.html">or just say hi</a>
+        <a class="c-btn c-btn--text h-close__alt" href="contact.html" data-i18n="common.sayHi">or just say hi</a>
       </div>
     </div>
     <p class="h-close__word" aria-hidden="true" data-wordmark>the cute devil</p>

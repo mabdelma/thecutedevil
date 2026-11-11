@@ -3,44 +3,45 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Shop · The Cute Devil</title>
-<meta name="description" content="Wear, scent and tech from The Cute Devil. Pick what you like, add it to your bag and order on WhatsApp. Sample prices, nothing is charged here.">
+<title data-i18n="shop.meta.title">Shop · The Cute Devil</title>
+<meta name="description" content="Wear, scent and tech from The Cute Devil. Pick what you like, add it to your bag and order on WhatsApp. Sample prices, nothing is charged here." data-i18n-attr="content:shop.meta.description">
+<meta name="author" content="Mohamed Khedr Mohamed Abdelmaged">
 <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
-<script>(function(d){d.classList.remove('no-js');d.classList.add('js');try{var t=localStorage.getItem('tcd:theme');if(t)d.setAttribute('data-theme',t)}catch(e){}})(document.documentElement)</script>
+<script>(function(d){d.classList.remove('no-js');d.classList.add('js');try{var t=localStorage.getItem('tcd:theme');if(t)d.setAttribute('data-theme',t)}catch(e){}try{var L='en zh es fr ar pt ru de ja hi it'.split(' '),s=location.search,q=(s.match(/[?&]lang=([a-zA-Z]{2})/)||[])[1],c=[q],l='en',i,k;try{c.push(localStorage.getItem('tcd:lang'))}catch(e){}c=c.concat(navigator.languages||[navigator.language]);for(i=0;i<c.length;i++){k=String(c[i]||'').toLowerCase().slice(0,2);if(L.indexOf(k)>-1){l=k;break}}d.lang=l;d.dir=l==='ar'?'rtl':'ltr';if(l!=='en'||/[?&]pseudo=1/.test(s)){d.classList.add('i18n-wait');setTimeout(function(){d.classList.remove('i18n-wait')},2500)}}catch(e){}})(document.documentElement)</script>
 <link rel="stylesheet" href="./src/css/tokens.css">
 <link rel="stylesheet" href="./src/css/base.css">
 <link rel="stylesheet" href="./src/css/motion.css">
 <link rel="stylesheet" href="./src/css/shop.css">
 </head>
 <body data-page="shop">
-<a class="u-skip" href="#main">Skip to content</a>
+<a class="u-skip" href="#main" data-i18n="shell.skip">Skip to content</a>
 <header data-shell="header"><a href="index.html">the cute devil</a> <a href="shop.html">shop</a></header>
 <main id="main">
   <section class="c-pagehead s-shophead" aria-labelledby="shop-title">
     <div class="c-container c-container--wide s-shophead__inner">
-      <p class="c-eyebrow" data-reveal="fade">the shop</p>
-      <h1 class="s-shophead__title" id="shop-title" data-split="words">pick your <span class="u-accent">secret.</span></h1>
-      <p class="c-lede" data-reveal="up" data-delay="0.25">Wear, scent and tech. Each piece looks innocent at first. Look twice.</p>
+      <p class="c-eyebrow" data-reveal="fade" data-i18n="shop.head.eyebrow">the shop</p>
+      <h1 class="s-shophead__title" id="shop-title" data-split="words" data-i18n-html="shop.head.title">pick your <span class="u-accent">secret.</span></h1>
+      <p class="c-lede" data-reveal="up" data-delay="0.25" data-i18n="shop.head.lede">Wear, scent and tech. Each piece looks innocent at first. Look twice.</p>
     </div>
   </section>
 
   <div class="s-band" data-marquee="36" aria-hidden="true">
-    <span class="s-band__item">wear</span>
-    <span class="s-band__item">scent</span>
-    <span class="s-band__item">tech</span>
-    <span class="s-band__item">sample prices</span>
-    <span class="s-band__item">order on whatsapp</span>
-    <span class="s-band__item">nothing is charged here</span>
+    <span class="s-band__item" data-i18n="niche.wear">wear</span>
+    <span class="s-band__item" data-i18n="niche.scent">scent</span>
+    <span class="s-band__item" data-i18n="niche.tech">tech</span>
+    <span class="s-band__item" data-i18n="shop.band.item1">sample prices</span>
+    <span class="s-band__item" data-i18n="shop.band.item2">order on whatsapp</span>
+    <span class="s-band__item" data-i18n="shop.band.item3">nothing is charged here</span>
   </div>
 
   <div class="s-filter">
     <div class="c-container c-container--wide s-filter__inner">
-      <nav class="s-filter__nav" aria-label="Filter the shop by niche">
+      <nav class="s-filter__nav" aria-label="Filter the shop by niche" data-i18n-attr="aria-label:shop.filter.label">
         <ul class="s-filter__chips" data-filter>
-          <li><a class="c-chip" href="shop.html" data-niche="all" aria-current="true">all <span class="c-chip__count" data-count="all"></span></a></li>
-          <li><a class="c-chip" href="shop.html?niche=wear" data-niche="wear">wear <span class="c-chip__count" data-count="wear"></span></a></li>
-          <li><a class="c-chip" href="shop.html?niche=scent" data-niche="scent">scent <span class="c-chip__count" data-count="scent"></span></a></li>
-          <li><a class="c-chip" href="shop.html?niche=tech" data-niche="tech">tech <span class="c-chip__count" data-count="tech"></span></a></li>
+          <li><a class="c-chip" href="shop.html" data-niche="all" aria-current="true" data-i18n="shop.filter.all">all <span class="c-chip__count" data-count="all"></span></a></li>
+          <li><a class="c-chip" href="shop.html?niche=wear" data-niche="wear" data-i18n="niche.wear">wear <span class="c-chip__count" data-count="wear"></span></a></li>
+          <li><a class="c-chip" href="shop.html?niche=scent" data-niche="scent" data-i18n="niche.scent">scent <span class="c-chip__count" data-count="scent"></span></a></li>
+          <li><a class="c-chip" href="shop.html?niche=tech" data-niche="tech" data-i18n="niche.tech">tech <span class="c-chip__count" data-count="tech"></span></a></li>
         </ul>
       </nav>
       <p class="s-filter__status" data-filter-status role="status" aria-live="polite"></p>
@@ -50,8 +51,8 @@
   <section class="s-catalogue" aria-labelledby="shop-line">
     <div class="c-container c-container--wide">
       <div class="s-catalogue__line">
-        <h2 id="shop-line" data-shop-line>everything. so far.</h2>
-        <p class="u-muted u-small"><span class="c-badge c-badge--sample">Sample</span> prices are placeholders for now.</p>
+        <h2 id="shop-line" data-shop-line data-i18n="shop.line.all">everything. so far.</h2>
+        <p class="u-muted u-small" data-i18n-html="shop.line.note"><span class="c-badge c-badge--sample">Sample</span> prices are placeholders for now.</p>
       </div>
 
       <div class="c-grid c-grid--products s-grid" data-shop-grid data-stagger="0.05"></div>
@@ -66,10 +67,10 @@
 
       <aside class="s-note" data-reveal="up" aria-labelledby="shop-how">
         <div class="u-stack" style="--stack: var(--space-2)">
-          <h2 class="u-h3" id="shop-how">pick. add. whatsapp. done.</h2>
-          <p>No account and no card. Your bag turns into a WhatsApp message, and we confirm price, stock and delivery in the chat.</p>
+          <h2 class="u-h3" id="shop-how" data-i18n="shop.how.title">pick. add. whatsapp. done.</h2>
+          <p data-i18n="shop.how.text">No account and no card. Your bag turns into a WhatsApp message, and we confirm price, stock and delivery in the chat.</p>
         </div>
-        <a class="c-btn c-btn--ghost" href="contact.html">ask us anything</a>
+        <a class="c-btn c-btn--ghost" href="contact.html" data-i18n="shop.how.cta">ask us anything</a>
       </aside>
     </div>
   </section>

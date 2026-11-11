@@ -3,56 +3,57 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Contact · The Cute Devil</title>
-<meta name="description" content="Talk to The Cute Devil on WhatsApp. Questions, orders and ideas, all in one chat.">
+<title data-i18n="contact.meta.title">Contact · The Cute Devil</title>
+<meta name="description" content="Talk to The Cute Devil on WhatsApp. Questions, orders and ideas, all in one chat." data-i18n-attr="content:contact.meta.description">
+<meta name="author" content="Mohamed Khedr Mohamed Abdelmaged">
 <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
-<script>(function(d){d.classList.remove('no-js');d.classList.add('js');try{var t=localStorage.getItem('tcd:theme');if(t)d.setAttribute('data-theme',t)}catch(e){}})(document.documentElement)</script>
+<script>(function(d){d.classList.remove('no-js');d.classList.add('js');try{var t=localStorage.getItem('tcd:theme');if(t)d.setAttribute('data-theme',t)}catch(e){}try{var L='en zh es fr ar pt ru de ja hi it'.split(' '),s=location.search,q=(s.match(/[?&]lang=([a-zA-Z]{2})/)||[])[1],c=[q],l='en',i,k;try{c.push(localStorage.getItem('tcd:lang'))}catch(e){}c=c.concat(navigator.languages||[navigator.language]);for(i=0;i<c.length;i++){k=String(c[i]||'').toLowerCase().slice(0,2);if(L.indexOf(k)>-1){l=k;break}}d.lang=l;d.dir=l==='ar'?'rtl':'ltr';if(l!=='en'||/[?&]pseudo=1/.test(s)){d.classList.add('i18n-wait');setTimeout(function(){d.classList.remove('i18n-wait')},2500)}}catch(e){}})(document.documentElement)</script>
 <link rel="stylesheet" href="./src/css/tokens.css">
 <link rel="stylesheet" href="./src/css/base.css">
 <link rel="stylesheet" href="./src/css/motion.css">
 </head>
 <body data-page="contact">
-<a class="u-skip" href="#main">Skip to content</a>
+<a class="u-skip" href="#main" data-i18n="shell.skip">Skip to content</a>
 <header data-shell="header"><a href="index.html">the cute devil</a> <a href="shop.html">shop</a></header>
 <main id="main">
   <section class="c-pagehead c-section--flush" aria-labelledby="contact-title">
     <div class="c-container c-split">
       <div class="u-stack u-stack--lg">
-        <p class="c-eyebrow" data-reveal="fade">contact</p>
-        <h1 id="contact-title" data-split="words">come closer. <span class="u-accent">ask anything.</span></h1>
-        <p class="c-lede" data-reveal="up" data-delay="0.25">A question, an order, an idea you have kept to yourself. Write to us on WhatsApp. The rest happens in the chat.</p>
+        <p class="c-eyebrow" data-reveal="fade" data-i18n="contact.head.eyebrow">contact</p>
+        <h1 id="contact-title" data-split="words" data-i18n-html="contact.head.title">come closer. <span class="u-accent">ask anything.</span></h1>
+        <p class="c-lede" data-reveal="up" data-delay="0.25" data-i18n="contact.head.lede">A question, an order, an idea you have kept to yourself. Write to us on WhatsApp. The rest happens in the chat.</p>
         <div class="u-cluster" data-reveal="up" data-delay="0.35" style="--cluster: var(--space-5)">
           <a class="c-btn c-btn--contrast c-btn--lg" href="https://wa.me/34622209935" target="_blank" rel="noopener" data-magnetic="0.3" data-devil>
-            <span class="c-btn__label">message us on whatsapp
+            <span class="c-btn__label" data-i18n="contact.head.cta">message us on whatsapp
               <svg class="c-btn__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </span>
           </a>
-          <a class="c-btn c-btn--text" href="shop.html">or open the shop</a>
+          <a class="c-btn c-btn--text" href="shop.html" data-i18n="contact.head.shopLink">or open the shop</a>
         </div>
         <dl class="c-facts u-mt-6" data-stagger="0.08">
-          <div class="c-facts__row"><dt class="c-facts__k">whatsapp</dt><dd class="c-facts__v"><a class="c-link" href="https://wa.me/34622209935" target="_blank" rel="noopener">+34 622 20 99 35</a></dd></div>
-          <div class="c-facts__row"><dt class="c-facts__k">linkedin</dt><dd class="c-facts__v"><a class="c-link" href="https://www.linkedin.com/in/mohamedjiedr" target="_blank" rel="noopener">mohamedjiedr</a></dd></div>
-          <div class="c-facts__row"><dt class="c-facts__k">where</dt><dd class="c-facts__v">Valladolid, Spain · Abu Dhabi, UAE</dd></div>
+          <div class="c-facts__row"><dt class="c-facts__k" data-i18n="contact.facts.whatsapp">whatsapp</dt><dd class="c-facts__v"><a class="c-link" href="https://wa.me/34622209935" target="_blank" rel="noopener" dir="ltr" translate="no">+34 622 20 99 35</a></dd></div>
+          <div class="c-facts__row"><dt class="c-facts__k" data-i18n="contact.facts.linkedin">linkedin</dt><dd class="c-facts__v"><a class="c-link" href="https://www.linkedin.com/in/mohamedjiedr" target="_blank" rel="noopener" translate="no">mohamedjiedr</a></dd></div>
+          <div class="c-facts__row"><dt class="c-facts__k" data-i18n="contact.facts.where">where</dt><dd class="c-facts__v" data-i18n="common.places">Valladolid, Spain · Abu Dhabi, UAE</dd></div>
         </dl>
       </div>
 
       <div class="c-card c-card--flat c-card--pad" data-devil data-reveal="up" data-delay="0.2" style="--devil-rest: 10; --devil-max: 22; --devil-horn: 5rem">
         <form class="c-form" data-wa-form action="https://wa.me/34622209935" method="get" target="_blank">
           <div class="u-stack" style="--stack: var(--space-2)">
-            <h2 class="u-h3">write it here. send it there.</h2>
-            <p class="u-muted u-small">This opens WhatsApp with your message ready. Nothing is sent until you press send.</p>
+            <h2 class="u-h3" data-i18n="contact.form.title">write it here. send it there.</h2>
+            <p class="u-muted u-small" data-i18n="contact.form.text">This opens WhatsApp with your message ready. Nothing is sent until you press send.</p>
           </div>
           <div class="c-field">
-            <label class="c-field__label" for="contact-name">your name</label>
+            <label class="c-field__label" for="contact-name" data-i18n="contact.form.name">your name</label>
             <input class="c-input" id="contact-name" name="name" type="text" autocomplete="name" required aria-describedby="contact-name-error">
             <p class="c-field__error" id="contact-name-error" role="alert"></p>
           </div>
           <div class="c-field">
-            <label class="c-field__label" for="contact-message">your message</label>
-            <textarea class="c-textarea" id="contact-message" name="message" rows="5" required placeholder="Tell us what is on your mind." aria-describedby="contact-message-error"></textarea>
+            <label class="c-field__label" for="contact-message" data-i18n="contact.form.message">your message</label>
+            <textarea class="c-textarea" id="contact-message" name="message" rows="5" required placeholder="Tell us what is on your mind." aria-describedby="contact-message-error" data-i18n-attr="placeholder:contact.form.messagePlaceholder"></textarea>
             <p class="c-field__error" id="contact-message-error" role="alert"></p>
           </div>
-          <button class="c-btn c-btn--primary c-btn--block" type="submit">open in whatsapp</button>
+          <button class="c-btn c-btn--primary c-btn--block" type="submit" data-i18n="contact.form.button">open in whatsapp</button>
           <p class="c-form__status" data-form-status role="status" aria-live="polite"></p>
         </form>
       </div>

@@ -367,7 +367,9 @@ export function mount(hostEl, { accent } = {}) {
     // The CSS puts the headline on the left from 768px up (also on portrait tablets), so the orb
     // sits right of centre there and never covers the copy. Narrower hosts: centred.
     const wide = w >= 768;
-    state.baseX = wide ? state.halfW * 0.42 : 0;
+    // right-to-left pages put the copy on the right, so the orb moves to the left
+    const side = document.documentElement.dir === 'rtl' ? -1 : 1;
+    state.baseX = wide ? state.halfW * 0.42 * side : 0;
     const room = wide ? state.halfW - state.baseX : state.halfW;
     state.baseScale = clamp(Math.min(room / 1.7, state.halfH / 1.75), 0.3, 0.94);
     return true;
@@ -424,7 +426,7 @@ export function mount(hostEl, { accent } = {}) {
 
     // Root: layout + scroll drift
     const s = state.baseScale * lerp(1, 0.84, p);
-    root.position.x = state.baseX + p * state.halfW * 0.08 * (state.baseX ? 1 : 0);
+    root.position.x = state.baseX + p * state.halfW * 0.08 * Math.sign(state.baseX);
     root.position.y = p * 0.1;
     root.scale.setScalar(s);
 
@@ -573,6 +575,7 @@ export function mount(hostEl, { accent } = {}) {
   window.addEventListener('pointerdown', onPointerDown, { passive: true });
   document.addEventListener('visibilitychange', onVisibility);
   document.addEventListener('tcd:theme', onTheme);
+  document.addEventListener('tcd:lang', onWindowResize); // direction may have flipped: lay out again
   canvas.addEventListener('webglcontextlost', onContextLost);
   canvas.addEventListener('webglcontextrestored', onContextRestored);
 
@@ -621,6 +624,7 @@ export function mount(hostEl, { accent } = {}) {
       window.removeEventListener('resize', onWindowResize);
       document.removeEventListener('visibilitychange', onVisibility);
       document.removeEventListener('tcd:theme', onTheme);
+      document.removeEventListener('tcd:lang', onWindowResize);
       canvas.removeEventListener('webglcontextlost', onContextLost);
       canvas.removeEventListener('webglcontextrestored', onContextRestored);
       if (ro) ro.disconnect();

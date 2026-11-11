@@ -7,7 +7,14 @@
 //          pitch (one line), tagline (what it is), description, art (id from art.js),
 //          options: [{ name, values: [], default?, prices?: { value: Number } }], status: 'live'|'soon'|'sold', featured }
 // `prices` on an option is optional: when present, the chosen value sets the unit price (see priceOf).
+//
+// WORDS live in the dictionary, not here (src/i18n/en.json is the source of truth):
+//   products.<id>.pitch / .tagline / .description   read through p.pitch, p.tagline, p.description
+//   niche.<niche>, option.<name>, option.value.<value>   read through nicheLabel / optionLabel / valueLabel
+// Product NAMES, sizes and "ml" are never translated. Option names and values below are the stable
+// English codes: the cart stores them and the WhatsApp message prints them as they are.
 import { renderArt } from './art.js';
+import { t, has } from './i18n.js';
 
 export const NICHES = ['wear', 'scent', 'tech'];
 
@@ -27,9 +34,6 @@ export const products = [
     price: 79,
     currency: 'EUR',
     sample: true,
-    pitch: 'tiny horns stitched on the hood.',
-    tagline: 'heavyweight hoodie',
-    description: 'A heavy, soft navy hoodie that looks perfectly innocent from the front. Pull the hood up and two small horns appear. The logo sits where the drawstrings meet, so the secret is always close to your chest.',
     art: 'hoodie',
     options: [{ name: 'size', values: SIZES, default: 'M' }],
     status: 'live',
@@ -42,9 +46,6 @@ export const products = [
     price: 35,
     currency: 'EUR',
     sample: true,
-    pitch: 'red shadow peeking from the pocket.',
-    tagline: 'pocket tee',
-    description: 'A cream cotton tee with one small detail: a horned shadow looking out of the chest pocket. Most people will not notice it. The ones who do will ask, and the answer is always "long story".',
     art: 'tee',
     options: [{ name: 'size', values: SIZES, default: 'M' }],
     status: 'live',
@@ -57,9 +58,6 @@ export const products = [
     price: 29,
     currency: 'EUR',
     sample: true,
-    pitch: 'navy, low-key embroidered shadow.',
-    tagline: 'six-panel cap, one size',
-    description: 'A navy six-panel cap with the shadow stitched tone on tone, so it only shows when the light hits it. One size, with an adjustable strap. Quiet from far away, curious up close.',
     art: 'cap',
     options: [],
     status: 'live',
@@ -72,9 +70,6 @@ export const products = [
     price: 16,
     currency: 'EUR',
     sample: true,
-    pitch: 'one angelic pair, one very red.',
-    tagline: 'two-pair sock set',
-    description: 'Two pairs in one set: a calm cream pair and a very red one. Wear the side that fits the day, or mix them and let people guess. Either way, only your shoes know.',
     art: 'socks',
     options: [{ name: 'size', values: ['36-40', '41-45'] }],
     status: 'soon',
@@ -89,9 +84,6 @@ export const products = [
     price: 68,
     currency: 'EUR',
     sample: true,
-    pitch: 'warm amber, a little smoke. signature.',
-    tagline: 'eau de parfum',
-    description: 'The signature scent of the house. Warm amber opens first, friendly and easy to like. A thin line of smoke arrives later and stays, like something you decided not to say.',
     art: 'perfume-secret',
     options: [volume(42, 68, 104)],
     status: 'live',
@@ -104,9 +96,6 @@ export const products = [
     price: 62,
     currency: 'EUR',
     sample: true,
-    pitch: 'vanilla and pink pepper. sweet first, then something else.',
-    tagline: 'eau de parfum',
-    description: 'Soft vanilla on the surface, pink pepper underneath. It starts sweet and polite, then turns a little sharp when people come closer. Made for a second impression.',
     art: 'perfume-sweet',
     options: [volume(38, 62, 96)],
     status: 'live',
@@ -119,9 +108,6 @@ export const products = [
     price: 74,
     currency: 'EUR',
     sample: true,
-    pitch: 'oud and leather. for the hours nobody asks about.',
-    tagline: 'eau de parfum',
-    description: 'Deep oud wrapped in dark leather. It is slow, calm and hard to read, and it gets better the later it is. A scent for the part of the night that stays between you and the moon.',
     art: 'perfume-midnight',
     options: [volume(46, 74, 112)],
     status: 'soon',
@@ -134,9 +120,6 @@ export const products = [
     price: 58,
     currency: 'EUR',
     sample: true,
-    pitch: 'clean citrus and musk. you were home.',
-    tagline: 'eau de toilette',
-    description: 'Bright citrus and clean musk, fresh as an open window. It smells like eight hours of sleep and a clear conscience. Nobody will ask where you were.',
     art: 'perfume-alibi',
     options: [volume(36, 58, 88)],
     status: 'live',
@@ -151,9 +134,6 @@ export const products = [
     price: 59,
     currency: 'EUR',
     sample: true,
-    pitch: 'horned pocket case. nobody knows what is playing.',
-    tagline: 'wireless earbuds',
-    description: 'Wireless earbuds in a small pocket case with two horns on top. It looks like a toy on the desk. What plays inside is between you and the horns. Your playlist stays your business.',
     art: 'earbuds',
     options: [{ name: 'colour', values: ['cream', 'navy'] }],
     status: 'live',
@@ -166,9 +146,6 @@ export const products = [
     price: 39,
     currency: 'EUR',
     sample: true,
-    pitch: 'hot name, calm face.',
-    tagline: 'slim power bank',
-    description: 'A slim navy power bank with the face on the front and four small lights that tell you how much is left. It sits in your pocket and says nothing. The only one who knows how long the night will be.',
     art: 'powerbank',
     options: [],
     status: 'live',
@@ -181,9 +158,6 @@ export const products = [
     price: 49,
     currency: 'EUR',
     sample: true,
-    pitch: 'one dial, angel white to devil red.',
-    tagline: 'desk mood lamp',
-    description: 'A small desk lamp with one dial. Turn it one way for clean white light to work by. Turn it the other way and the room goes deep red, and the lamp grows horns on the wall.',
     art: 'lamp',
     options: [],
     status: 'soon',
@@ -196,15 +170,26 @@ export const products = [
     price: 19,
     currency: 'EUR',
     sample: true,
-    pitch: 'braided red, pointed tip.',
-    tagline: 'braided charging cable',
-    description: 'A braided red charging cable that ends in a pointed tail tip. It is the one cable on the desk nobody takes by mistake. Leave it out: it looks like something is hiding behind the laptop.',
     art: 'cable',
     options: [],
     status: 'sold',
     featured: false,
   },
 ];
+
+// pitch, tagline and description always answer in the active language
+products.forEach((p) => {
+  ['pitch', 'tagline', 'description'].forEach((field) => {
+    Object.defineProperty(p, field, { get: () => t(`products.${p.id}.${field}`), enumerable: true });
+  });
+});
+
+/** "wear" → the niche name in the active language. */
+export const nicheLabel = (niche) => (has(`niche.${niche}`) ? t(`niche.${niche}`) : String(niche || ''));
+/** "size" → the option name in the active language. */
+export const optionLabel = (name) => (has(`option.${name}`) ? t(`option.${name}`) : String(name || ''));
+/** "cream" → the colour in the active language; sizes and volumes ("M", "50 ml") pass through untouched. */
+export const valueLabel = (value) => (has(`option.value.${value}`) ? t(`option.value.${value}`) : String(value == null ? '' : value));
 
 const index = new Map(products.map((p) => [p.id, p]));
 

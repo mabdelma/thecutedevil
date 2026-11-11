@@ -3,6 +3,7 @@
 // data-tilt, data-marquee, data-devil. See web/STYLEGUIDE.md.
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { onBeforeApply } from './i18n.js';
 
 const ctx = { lenis: null, reduced: false, fine: false, on: false };
 const seen = new WeakSet();
@@ -17,6 +18,8 @@ export function init(options = {}) {
   ctx.on = !ctx.reduced;
   if (ctx.on && ctx.fine) startDevilPointer();
   if (ctx.on) gsap.ticker.add(tickMarquees);
+  onBeforeApply(unsplitIn);
+  document.addEventListener('tcd:lang', onLang);
 }
 
 /* ---------------------------------------------------------------- reveal */
@@ -73,56 +76,100 @@ function setupStagger(el) {
 }
 
 /* ---------------------------------------------------------------- split text (hand made) */
-function splitInto(source, target, type, bag) {
+// Scripts whose letters join or stack (Arabic, Hebrew, Devanagari and the other Indic scripts, Thai…):
+// one span per character breaks the shaping, so "chars" quietly becomes "words" for them.
+const SHAPED = /[֐-ࣿऀ-෿฀-໿יִ-﷿ﹰ-﻿]/;
+// Chinese and Japanese have no spaces: a "word" there is a segment, so long lines can still wrap.
+const CJK = /[぀-ヿ㐀-鿿豈-﫿＀-￯]/;
+const CJK_STICKY = /^[\s、。，．！？：；・」』）〉》】,.!?:;)\]…ー]+$/;
+function pieces(part) {
+  if (!CJK.test(part)) return [part];
+  let list = [];
+  try {
+    const lang = document.documentElement.lang || undefined;
+    list = Array.from(new Intl.Segmenter(lang, { granularity: 'word' }).segment(part), (x) => x.segment);
+  } catch (err) { list = Array.from(part); }
+  const out = [];
+  list.forEach((seg) => { if (out.length && CJK_STICKY.test(seg)) out[out.length - 1] += seg; else out.push(seg); });
+  return out;
+}
+// Right-to-left pages: every word becomes an inline-block, and the browser orders those blocks right to
+// left. A run of Latin words ("The Cute Devil", "halo's off hoodie") must stay in reading order, so
+// such a run is kept together as ONE left-to-right block.
+const RTL_CHARS = /[\u0590-\u08FF\uFB1D-\uFDFF\uFE70-\uFEFF]/;
+const LTR_WORD = /[A-Za-z\u00C0-\u024F\u0400-\u04FF]/;
+function tokens(text, rtl) {
+  const parts = text.split(/(\s+)/).filter((part) => part !== '');
+  if (!rtl) return parts;
+  const out = [];
+  const latin = (x) => LTR_WORD.test(x) && !RTL_CHARS.test(x);
+  parts.forEach((part) => {
+    const n = out.length;
+    if (latin(part) && n >= 2 && /^\s+$/.test(out[n - 1]) && latin(out[n - 2])) { out.pop(); out[n - 2] += `\u00A0${part}`; } else out.push(part);
+  });
+  return out;
+}
+function splitInto(source, target, type, bag, rtl) {
   source.childNodes.forEach((node) => {
     if (node.nodeType === 3) {
-      node.textContent.split(/(\s+)/).forEach((part) => {
-        if (!part) return;
+      tokens(node.textContent, rtl).forEach((part) => {
         if (/^\s+$/.test(part)) { target.appendChild(document.createTextNode(' ')); return; }
-        const w = document.createElement('span');
-        w.className = 'c-split__w';
-        if (type === 'chars') {
-          for (const ch of Array.from(part)) {
-            const c = document.createElement('span');
-            c.className = 'c-split__c';
-            c.textContent = ch;
-            w.appendChild(c);
-            bag.chars.push(c);
+        pieces(part).forEach((piece) => {
+          const w = document.createElement('span');
+          w.className = 'c-split__w';
+          if (rtl && !RTL_CHARS.test(piece) && LTR_WORD.test(piece)) w.dir = 'ltr';
+          if (type === 'chars') {
+            for (const ch of Array.from(piece)) {
+              const c = document.createElement('span');
+              c.className = 'c-split__c';
+              c.textContent = ch;
+              w.appendChild(c);
+              bag.chars.push(c);
+            }
+          } else {
+            const i = document.createElement('span');
+            i.className = 'c-split__i';
+            i.textContent = piece;
+            w.appendChild(i);
+            bag.inners.push(i);
           }
-        } else {
-          const i = document.createElement('span');
-          i.className = 'c-split__i';
-          i.textContent = part;
-          w.appendChild(i);
-          bag.inners.push(i);
-        }
-        bag.words.push(w);
-        target.appendChild(w);
+          bag.words.push(w);
+          target.appendChild(w);
+        });
       });
     } else if (node.nodeType === 1) {
       if (node.tagName === 'BR') { target.appendChild(node.cloneNode()); return; }
       const clone = node.cloneNode(false);
-      splitInto(node, clone, type, bag);
+      splitInto(node, clone, type, bag, rtl);
       target.appendChild(clone);
     }
   });
 }
 
-/** Split an element by hand. Returns { words, chars, targets, lines() }.
- *  Screen readers get the original text; the visual copy is aria-hidden. */
+const splits = new Set(); // every element that is split right now
+
+/** Split an element by hand. Returns { type, words, chars, targets, lines() }.
+ *  Screen readers get the original text; the visual copy is aria-hidden.
+ *  "chars" falls back to "words" for scripts that must not be cut into letters (then `chars` is empty). */
 export function split(el, type = 'words') {
   if (el._tcdSplit) return el._tcdSplit;
+  if (type === 'chars' && SHAPED.test(el.textContent)) type = 'words';
   const bag = { words: [], chars: [], inners: [] };
+  const original = Array.from(el.childNodes);
   const visual = document.createElement('span');
   visual.setAttribute('aria-hidden', 'true');
-  splitInto(el, visual, type, bag);
+  const pageRtl = getComputedStyle(el).direction === 'rtl';
+  const mixed = pageRtl && RTL_CHARS.test(el.textContent);
+  // Latin-only text on a right-to-left page (brand, product names): the whole copy runs left to right
+  if (pageRtl && !mixed) visual.dir = 'ltr';
+  splitInto(el, visual, type, bag, mixed);
   const sr = document.createElement('span');
   sr.className = 'u-sr';
   sr.textContent = el.textContent.replace(/\s+/g, ' ').trim();
   el.replaceChildren(sr, visual);
   const targets = type === 'chars' ? bag.chars : bag.inners;
   const result = {
-    type, words: bag.words, chars: bag.chars, targets,
+    type, words: bag.words, chars: bag.chars, targets, original,
     /** index of the visual line each word sits on (measure after layout) */
     lines() {
       let line = -1; let top = null;
@@ -135,24 +182,67 @@ export function split(el, type = 'words') {
   };
   el._tcdSplit = result;
   el.classList.add('is-split');
+  splits.add(el);
   return result;
 }
-function setupSplit(el) {
-  const type = ['chars', 'words', 'lines'].includes(el.dataset.split) ? el.dataset.split : 'words';
-  const s = split(el, type);
-  const delay = parseFloat(el.dataset.delay) || 0;
-  gsap.set(s.targets, { yPercent: 125 });
-  onView(el, () => {
-    el.classList.add('is-in');
-    const dur = parseFloat(el.dataset.dur) || (type === 'chars' ? 0.7 : 0.9); // data-dur: a quicker reveal for one headline
-    const vars = { yPercent: 0, duration: dur, ease: EASE, overwrite: 'auto' };
-    if (type === 'lines') {
-      const lines = s.lines();
-      gsap.to(s.targets, { ...vars, delay: (i) => delay + lines[i] * 0.1 });
-    } else {
-      gsap.to(s.targets, { ...vars, delay, stagger: type === 'chars' ? 0.022 : Math.min(0.06, dur / 12) });
-    }
+
+/** Put the original nodes back (before a re-translation). Returns true if the element was split. */
+export function unsplit(el) {
+  const s = el._tcdSplit;
+  if (!s) return false;
+  gsap.killTweensOf([...s.targets, ...s.words]);
+  el.replaceChildren(...s.original);
+  el._tcdSplit = null;
+  splits.delete(el);
+  return true;
+}
+
+// i18n hook: translated headlines go back to plain markup first, then get split again on `tcd:lang`
+const I18N = '[data-i18n],[data-i18n-html]';
+const pending = new Set();
+function unsplitIn(root) {
+  splits.forEach((el) => {
+    if (!el.isConnected) { splits.delete(el); return; }
+    if (!(root === el || root.contains(el))) return;
+    if (!(el.matches(I18N) || el.querySelector(I18N))) return;
+    const auto = Boolean(el._tcdAuto);
+    if (unsplit(el) && auto) pending.add(el);
   });
+}
+function onLang() {
+  pending.forEach((el) => {
+    if (!el.isConnected) return;
+    try {
+      const s = split(el, splitType(el));
+      if (!el.classList.contains('is-in')) gsap.set(s.targets, { yPercent: 125 });
+    } catch (err) { show(el); }
+  });
+  pending.clear();
+  marquees.forEach((m) => fillMarquee(m));
+  refresh();
+}
+
+const splitType = (el) => (['chars', 'words', 'lines'].includes(el.dataset.split) ? el.dataset.split : 'words');
+function playSplit(el) {
+  const s = el._tcdSplit;
+  el.classList.add('is-in');
+  if (!s) return;
+  const { type } = s;
+  const delay = parseFloat(el.dataset.delay) || 0;
+  const dur = parseFloat(el.dataset.dur) || (type === 'chars' ? 0.7 : 0.9); // data-dur: a quicker reveal for one headline
+  const vars = { yPercent: 0, duration: dur, ease: EASE, overwrite: 'auto' };
+  if (type === 'lines') {
+    const lines = s.lines();
+    gsap.to(s.targets, { ...vars, delay: (i) => delay + lines[i] * 0.1 });
+  } else {
+    gsap.to(s.targets, { ...vars, delay, stagger: type === 'chars' ? 0.022 : Math.min(0.06, dur / 12) });
+  }
+}
+function setupSplit(el) {
+  const s = split(el, splitType(el));
+  el._tcdAuto = true;
+  gsap.set(s.targets, { yPercent: 125 });
+  onView(el, () => playSplit(el)); // reads the current split, so a re-translated headline still plays
 }
 
 /* ---------------------------------------------------------------- parallax */
@@ -250,7 +340,8 @@ function tickMarquees(time, deltaMs) {
   marquees.forEach((m) => {
     if (!m.live || !m.w) return;
     if (!m.el.isConnected) { marquees.delete(m); return; }
-    const dir = m.speed < 0 ? 1 : -1;
+    // right-to-left pages read the other way, so the band travels the other way too
+    const dir = (m.speed < 0 ? 1 : -1) * (document.documentElement.dir === 'rtl' ? -1 : 1);
     m.x += dir * (Math.abs(m.speed) + boost) * dt;
     m.x = ((m.x % m.w) - m.w) % m.w;
     m.track.style.transform = `translate3d(${m.x.toFixed(2)}px,0,0)`;

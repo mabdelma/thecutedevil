@@ -3,64 +3,64 @@
 // so the drawer brings its own styles with the import below.
 import '../css/shop.css';
 import * as cart from './cart.js';
-import { formatPrice, artFor } from './products.js';
+import { formatPrice, artFor, optionLabel, valueLabel } from './products.js';
+import { t, tn, strings, apply } from './i18n.js';
 import { createOrder, validateCustomer, submitOrder, LIMITS } from './checkout.js';
 
-const STR = {
-  steps: ['bag', 'details', 'whatsapp'],
-  stepOf: (n) => `step ${n} of 3`,
-  close: 'Close bag',
-  titleBag: 'your bag',
-  titleDetails: 'your details',
-  titlePreview: 'check the message',
-  titleSent: 'did it go through?',
-  titleDone: 'thank you.',
-  pieces: (n) => (n === 1 ? '1 piece' : `${n} pieces`),
-  emptyTitle: 'nothing in here. yet.',
-  emptyText: 'Your bag is empty. Go and find something with a hidden side.',
-  emptyCta: 'open the shop',
-  each: (price) => `${price} each`,
-  qtyGroup: (name) => `Quantity for ${name}`,
-  less: (name) => `One less ${name}`,
-  more: (name) => `One more ${name}`,
-  remove: (name) => `Remove ${name} from the bag`,
-  removeShort: 'remove',
-  maxHint: (n) => `${n} is the most per piece.`,
-  total: 'sample total',
-  sample: 'Sample',
-  honest: 'Sample prices. Nothing is charged here.',
-  toDetails: 'order on whatsapp',
-  keepLooking: 'keep looking',
-  detailsIntro: 'No account, no card. Tell us who you are and we will confirm price, stock and delivery in the chat.',
-  name: 'your name',
-  city: 'city / country',
-  cityHint: 'So we can tell you about delivery.',
-  note: 'note',
-  optional: '(optional)',
-  notePlaceholder: 'Gift? A question? Tell us here.',
-  toPreview: 'see my message',
-  back: 'back to the bag',
-  previewIntro: 'This is the message WhatsApp will open with. Nothing is sent until you press send there.',
-  messageLabel: 'Your order message',
-  ref: 'order reference',
-  openWhatsApp: 'open whatsapp',
-  copy: 'copy the message',
-  copied: 'Message copied.',
-  copyFailed: 'Could not copy. Select the text and copy it by hand.',
-  edit: 'edit my details',
-  sentIntro: 'WhatsApp opened in a new tab with your order ready. Press send there. Your bag stays here until you tell us it went through.',
-  sentYes: 'sent, clear bag',
-  sentAgain: 'open whatsapp again',
-  sentNo: 'not yet, back to the bag',
-  doneText: 'Your message is on its way. We answer in the chat and confirm price, stock and delivery there.',
-  doneRef: (ref) => `Your reference is ${ref}.`,
-  doneCta: 'keep looking',
-  added: (name) => `${name} added to your bag.`,
-  removed: (name) => `${name} removed from your bag.`,
-  qtyNow: (name, qty, total) => `${name}: quantity ${qty}. Sample total ${total}.`,
-  cleared: 'Bag cleared. Thank you.',
-  fixForm: 'Please check the marked fields.',
-};
+const STR = strings({
+  steps: ['cart.step.bag', 'cart.step.details', 'cart.step.whatsapp'], // dictionary keys
+  stepOf: (n) => t('cart.stepOf', { n, total: 3 }),
+  close: 'cart.close',
+  titleBag: 'cart.title.bag',
+  titleDetails: 'cart.title.details',
+  titlePreview: 'cart.title.preview',
+  titleSent: 'cart.title.sent',
+  titleDone: 'cart.title.done',
+  pieces: (n) => tn('cart.pieces', n),
+  emptyTitle: 'cart.empty.title',
+  emptyText: 'cart.empty.text',
+  emptyCta: 'common.openShop',
+  each: (price) => t('cart.each', { price }),
+  qtyGroup: (name) => t('cart.qtyGroup', { name }),
+  less: (name) => t('cart.less', { name }),
+  more: (name) => t('cart.more', { name }),
+  remove: (name) => t('cart.remove', { name }),
+  maxHint: (n) => t('cart.maxHint', { n }),
+  total: 'cart.total',
+  sample: 'common.sample',
+  honest: 'common.honest',
+  toDetails: 'cart.toDetails',
+  keepLooking: 'cart.keepLooking',
+  detailsIntro: 'cart.details.intro',
+  name: 'cart.field.name',
+  city: 'cart.field.city',
+  cityHint: 'cart.field.cityHint',
+  note: 'cart.field.note',
+  optional: 'cart.field.optional',
+  notePlaceholder: 'cart.field.notePlaceholder',
+  toPreview: 'cart.toPreview',
+  back: 'cart.back',
+  previewIntro: 'cart.preview.intro',
+  messageLabel: 'cart.preview.messageLabel',
+  ref: 'cart.ref',
+  openWhatsApp: 'cart.openWhatsApp',
+  copy: 'cart.copy',
+  copied: 'cart.copied',
+  copyFailed: 'cart.copyFailed',
+  edit: 'cart.edit',
+  sentIntro: 'cart.sent.intro',
+  sentYes: 'cart.sent.yes',
+  sentAgain: 'cart.sent.again',
+  sentNo: 'cart.sent.no',
+  doneText: 'cart.done.text',
+  doneRef: (ref) => t('cart.done.ref', { ref }),
+  doneCta: 'cart.keepLooking',
+  added: (name) => t('cart.say.added', { name }),
+  removed: (name) => t('cart.say.removed', { name }),
+  qtyNow: (name, qty, total) => t('cart.say.qty', { name, qty, total }),
+  cleared: 'cart.say.cleared',
+  fixForm: 'cart.say.fixForm',
+});
 
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const ICON = {
@@ -86,7 +86,7 @@ const el = { root: null, wrap: null, panel: null, title: null, stepLabel: null, 
 
 /* ---------------------------------------------------------------- templates */
 function optionText(line) {
-  return (line.product.options || []).map((o) => `${o.name} ${line.options[o.name]}`).join(' · ');
+  return (line.product.options || []).map((o) => `${optionLabel(o.name)} ${valueLabel(line.options[o.name])}`).join(' · ');
 }
 
 function lineHTML(line, i) {
@@ -97,7 +97,7 @@ function lineHTML(line, i) {
 <li class="s-line" style="--i:${i}" data-key="${esc(line.key)}">
   <a class="s-line__thumb" href="${href}" tabindex="-1" aria-hidden="true">${artFor(p, `bag${i}`)}</a>
   <div class="s-line__main">
-    <a class="s-line__name" href="${href}">${esc(p.name)}</a>
+    <a class="s-line__name" href="${href}" translate="no">${esc(p.name)}</a>
     <p class="s-line__meta">${esc(meta)}</p>
     <div class="s-line__row">
       <div class="s-qty s-qty--sm" role="group" aria-label="${esc(STR.qtyGroup(p.name))}">
@@ -185,8 +185,8 @@ const VIEWS = {
       title: STR.titlePreview, step: 3,
       body: `
 <p class="s-cart__intro">${esc(STR.previewIntro)}</p>
-<pre class="s-cart__msg" tabindex="0" aria-label="${esc(STR.messageLabel)}" data-cart-message>${esc(order.text)}</pre>
-<p class="s-cart__ref"><span>${esc(STR.ref)}</span> <strong>${esc(order.ref)}</strong></p>`,
+<pre class="s-cart__msg" tabindex="0" aria-label="${esc(STR.messageLabel)}" data-cart-message lang="en" dir="ltr" translate="no">${esc(order.text)}</pre>
+<p class="s-cart__ref"><span>${esc(STR.ref)}</span> <strong translate="no">${esc(order.ref)}</strong></p>`,
       foot: `<p class="s-cart__honest">${esc(STR.honest)}</p>
 <a class="c-btn c-btn--primary c-btn--block" href="${esc(order.url)}" target="_blank" rel="noopener" data-act="send" data-fid="send" data-cart-wa>${ICON.wa}${esc(STR.openWhatsApp)}</a>
 <!-- PAYMENT-PROVIDER SLOT (markup): a card provider adds its button here, for example
@@ -204,7 +204,7 @@ const VIEWS = {
       title: STR.titleSent, step: 3,
       body: `
 <p class="s-cart__intro">${esc(STR.sentIntro)}</p>
-<p class="s-cart__ref"><span>${esc(STR.ref)}</span> <strong>${esc(order.ref)}</strong></p>`,
+<p class="s-cart__ref"><span>${esc(STR.ref)}</span> <strong translate="no">${esc(order.ref)}</strong></p>`,
       foot: `
 <button type="button" class="c-btn c-btn--primary c-btn--block" data-act="sent-yes" data-fid="sent-yes">${esc(STR.sentYes)}</button>
 <a class="c-btn c-btn--ghost c-btn--block" href="${esc(order.url)}" target="_blank" rel="noopener" data-cart-wa>${ICON.wa}${esc(STR.sentAgain)}</a>
@@ -448,10 +448,10 @@ function mount() {
         <p class="s-cart__step" data-cart-step></p>
         <h2 class="s-cart__title" id="tcd-cart-title"></h2>
       </div>
-      <button type="button" class="s-cart__close" data-cart-close aria-label="${esc(STR.close)}">${ICON.close}</button>
+      <button type="button" class="s-cart__close" data-cart-close aria-label="${esc(STR.close)}" data-i18n-attr="aria-label:cart.close">${ICON.close}</button>
     </header>
     <ol class="s-cart__steps" aria-hidden="true" data-cart-steps>
-      ${STR.steps.map((s) => `<li class="s-cart__dot" data-step-dot><span>${esc(s)}</span></li>`).join('')}
+      ${STR.steps.map((key) => `<li class="s-cart__dot" data-step-dot><span data-i18n="${key}">${esc(t(key))}</span></li>`).join('')}
     </ol>
     <div class="s-cart__body" data-cart-body data-lenis-prevent></div>
     <footer class="s-cart__foot" data-cart-foot></footer>
@@ -488,6 +488,17 @@ function mount() {
   });
   document.addEventListener('keydown', onKey);
   document.addEventListener('tcd:cart', onCart);
+  // language change: the frame is marked with data-i18n, the current step is drawn again
+  document.addEventListener('tcd:lang', () => {
+    readForm();
+    apply(el.root);
+    // the previewed order text is English in every language, only its "Site language" line changes
+    if (state.order && (state.step === 'preview' || state.step === 'sent')) {
+      state.order = createOrder(cart.items(), { ...state.customer, ref: state.order.ref });
+    }
+    if (state.errors && Object.keys(state.errors).length) state.errors = validateCustomer(state.customer).errors;
+    render();
+  });
   window.addEventListener('pageshow', (e) => { if (e.persisted) { close(); render(); } });
   document.querySelectorAll('[data-cart-toggle]').forEach((b) => b.setAttribute('aria-expanded', 'false'));
   // make sure the header count matches the cleaned cart (unknown or sold items are dropped on load)
