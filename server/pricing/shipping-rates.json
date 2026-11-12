@@ -1,0 +1,14 @@
+{
+  "_readme": "Owner-editable customer shipping prices, in minor units (499 = 4.99). One price per order, even when it ships in two parcels. amount = base + perExtraItem x (items - 1); free when the items subtotal reaches freeFrom (leave freeFrom out for never free). Every region needs every currency its countries use. These numbers are PLACEHOLDERS: set them before live mode.",
+  "version": 1,
+  "EU": { "EUR": { "base": 499, "perExtraItem": 150, "freeFrom": 9000 } },
+  "UK": { "GBP": { "base": 449, "perExtraItem": 150, "freeFrom": 8000 } },
+  "CA": { "CAD": { "base": 899, "perExtraItem": 250, "freeFrom": 15000 } },
+  "US": { "USD": { "base": 599, "perExtraItem": 200, "freeFrom": 10000 } },
+  "AE": { "AED": { "base": 2500, "perExtraItem": 500, "freeFrom": 40000 } },
+  "GCC": {
+    "AED": { "base": 3500, "perExtraItem": 700, "freeFrom": 50000 },
+    "SAR": { "base": 3500, "perExtraItem": 700, "freeFrom": 50000 }
+  },
+  "EG": { "EGP": { "base": 7500, "perExtraItem": 1500, "freeFrom": 300000 } }
+}

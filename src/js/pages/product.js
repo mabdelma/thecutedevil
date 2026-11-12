@@ -1,9 +1,11 @@
 // The Cute Devil: product page. Reads ?id=, renders the stage, the buy form and related pieces. Owner: shop.
 import { ready } from '../app.js';
 import { scan, refresh } from '../motion.js';
-import { getById, byNiche, priceOf, formatPrice, artFor, nicheLabel, optionLabel, valueLabel } from '../products.js';
-import { t, strings } from '../i18n.js';
+import '../../css/checkout.css';
+import { getById, byNiche, priceOf, formatPrice, artFor, nicheLabel, optionLabel, valueLabel, statusOf, availableHere, personalisationOf, validatePersonalisation, personalisationLabel } from '../products.js';
+import { t, strings, has, getLang } from '../i18n.js';
 import * as cart from '../cart.js';
+import * as commerce from '../commerce.js';
 import { whatsappUrl } from '../checkout.js';
 import { cardHTML, bindQuickAdd } from './shop.js';
 
@@ -25,10 +27,21 @@ const STR = strings({
   soonReason: 'product.soonReason',
   soldReason: 'product.soldReason',
   ask: 'product.ask',
-  honest: 'common.honest',
+  honest: () => t(commerce.isOn() ? 'product.on.honest' : 'common.honest'),
   detailsTitle: 'product.detailsTitle',
   howTitle: 'product.howTitle',
-  how: () => [1, 2, 3].map((i) => [t(`product.how${i}.k`), t(`product.how${i}.v`)]),
+  how: () => [1, 2, 3].map((i) => (commerce.isOn() ? [t(`product.on.how${i}.k`), t(`product.on.how${i}.v`)] : [t(`product.how${i}.k`), t(`product.how${i}.v`)])),
+  // commerce on
+  priceNoteOn: 'product.on.priceNote',
+  deliverTo: 'cart.deliverTo',
+  notHereBtn: (country) => t('product.on.notHereBtn', { country }),
+  notHereReason: 'product.on.notHereReason',
+  persoTitle: 'product.perso.title',
+  persoOptional: 'cart.field.optional',
+  persoHint: (n) => t('product.perso.hint', { n }),
+  persoExtra: (price) => t('product.perso.extra', { price }),
+  persoNotice: 'product.perso.notice',
+  persoErr: (kind, label, n) => t(`product.perso.err.${kind}`, { label, n }),
   relatedEyebrow: (niche) => t('product.relatedEyebrow', { niche: nicheLabel(niche) }),
   relatedTitle: 'product.relatedTitle',
   lostEyebrow: 'product.lost.eyebrow',
@@ -48,6 +61,7 @@ const ICON = {
   arrow: '<svg class="c-btn__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
   minus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M6 12h12"/></svg>',
   plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M6 12h12M12 6v12"/></svg>',
+  pin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 21s-6.5-5.6-6.5-10.5a6.5 6.5 0 0 1 13 0C18.5 15.4 12 21 12 21z"/><circle cx="12" cy="10.5" r="2.3"/></svg>',
 };
 
 /* ---------------------------------------------------------------- templates */
@@ -55,16 +69,59 @@ const ICON = {
 function defaultValue(p, opt) {
   if (opt.default && opt.values.includes(opt.default)) return opt.default;
   if (opt.prices) {
-    const match = opt.values.find((v) => opt.prices[v] === p.price);
+    const match = opt.values.find((v) => priceOf(p, { [opt.name]: v }) === p.price);
     if (match) return match;
   }
   return opt.values[0];
 }
 
+/** The delivery-country select (commerce on): prices and availability follow it. */
+function marketHTML() {
+  if (!commerce.isOn()) return '';
+  const now = commerce.getCountry();
+  const options = commerce.countryOptions(getLang()).map((c) => `<option value="${c.code}"${c.code === now ? ' selected' : ''}>${esc(c.name)} · ${c.currency}</option>`).join('');
+  return `
+<div class="k-market k-market--inline">
+  <label class="k-market__k" for="product-country">${esc(STR.deliverTo)}</label>
+  <span class="c-langpick k-market__pick">${ICON.pin}<select class="c-select c-langpick__select" id="product-country" data-country-select>${options}</select></span>
+</div>`;
+}
+
+/** Text fields a product lets the customer personalise (name on the chest, …). */
+function persoHTML(p) {
+  const fields = personalisationOf(p);
+  if (!fields.length) return '';
+  const currency = commerce.getCurrency();
+  const rows = fields.map((f) => {
+    const id = `perso-${esc(f.key)}`;
+    const extra = f.surcharge && Number.isInteger(f.surcharge[currency]) && f.surcharge[currency] > 0 ? STR.persoExtra(formatPrice(f.surcharge[currency], currency)) : '';
+    const max = Number.isInteger(f.maxLength) ? f.maxLength : 40;
+    const hintKey = `personalisation.${f.key}.hint`;
+    return `
+<div class="c-field k-perso__field" data-perso="${esc(f.key)}">
+  <label class="c-field__label" for="${id}">${esc(personalisationLabel(f.key))}${f.required ? '' : ` <small>${esc(STR.persoOptional)}</small>`}${extra ? ` <small class="k-perso__extra" translate="no">${esc(extra)}</small>` : ''}</label>
+  <div class="k-perso__control">
+    <input class="c-input" id="${id}" name="perso:${esc(f.key)}" type="text" maxlength="${max}" autocomplete="off" autocapitalize="characters" spellcheck="false" dir="auto" aria-describedby="${id}-hint ${id}-error"${f.required ? ' required aria-required="true"' : ''}>
+    <span class="k-perso__count" data-perso-count aria-hidden="true" translate="no">0/${max}</span>
+  </div>
+  <p class="c-field__hint" id="${id}-hint">${esc(has(hintKey) ? t(hintKey) : STR.persoHint(max))}</p>
+  <p class="c-field__error" id="${id}-error" role="alert"></p>
+</div>`;
+  }).join('');
+  return `
+<fieldset class="s-opt k-perso">
+  <legend class="s-opt__legend">${esc(STR.persoTitle)}</legend>
+  ${rows}
+  <p class="k-perso__notice">${esc(STR.persoNotice)}</p>
+</fieldset>`;
+}
+
 function optionHTML(p, opt) {
   const preset = defaultValue(p, opt);
+  // show a price under each pill only when the values really cost different amounts
+  const priced = new Set(opt.values.map((v) => priceOf(p, { [opt.name]: v }))).size > 1;
   const pills = opt.values.map((value, i) => {
-    const sub = opt.prices ? `<span class="s-pill__sub">${esc(formatPrice(opt.prices[value], p.currency))}</span>` : '';
+    const sub = priced ? `<span class="s-pill__sub" translate="no">${esc(formatPrice(priceOf(p, { [opt.name]: value }), p.currency))}</span>` : '';
     return `
 <label class="s-pill">
   <input class="s-pill__input" type="radio" name="${esc(opt.name)}" value="${esc(value)}" id="opt-${esc(opt.name)}-${i}"${value === preset ? ' checked' : ''}>
@@ -80,8 +137,17 @@ function optionHTML(p, opt) {
 }
 
 function buyHTML(p) {
-  if (p.status !== 'live') {
-    const soon = p.status === 'soon';
+  const status = statusOf(p);
+  if (status === 'live' && !availableHere(p)) {
+    return `
+<div class="s-buy" data-buy>
+  ${marketHTML()}
+  <button type="button" class="c-btn c-btn--primary c-btn--lg c-btn--block" disabled>${esc(STR.notHereBtn(commerce.countryName(commerce.getCountry(), getLang())))}</button>
+  <p class="s-buy__reason">${esc(STR.notHereReason)} <a class="c-link" href="${esc(whatsappUrl(ASK_TEXT(p.name)))}" target="_blank" rel="noopener">${esc(STR.ask)}</a></p>
+</div>`;
+  }
+  if (status !== 'live') {
+    const soon = status === 'soon';
     return `
 <div class="s-buy" data-buy>
   <button type="button" class="c-btn c-btn--primary c-btn--lg c-btn--block" disabled>${esc(soon ? STR.soonBtn : STR.soldBtn)}</button>
@@ -91,6 +157,7 @@ function buyHTML(p) {
   return `
 <form class="s-buy" data-buy novalidate>
   ${(p.options || []).map((opt) => optionHTML(p, opt)).join('')}
+  ${persoHTML(p)}
   <div class="s-buy__row">
     <div class="s-buy__qty">
       <span class="s-buy__qty-label" id="qty-label">${esc(STR.qty)}</span>
@@ -102,13 +169,16 @@ function buyHTML(p) {
     </div>
     <button type="submit" class="c-btn c-btn--primary c-btn--lg s-buy__add" data-add data-magnetic="0.25" data-devil><span class="c-btn__label">${esc(STR.add)}${ICON.arrow}</span></button>
   </div>
-  <p class="s-buy__honest">${esc(STR.honest)}</p>
+  ${marketHTML()}
+  <p class="s-buy__honest">${esc(STR.honest())}</p>
 </form>`;
 }
 
 function pageHTML(p) {
-  const status = p.status === 'soon' ? `<span class="c-badge c-badge--soon">${esc(STR.soon)}</span>`
-    : p.status === 'sold' ? `<span class="c-badge c-badge--sold">${esc(STR.sold)}</span>` : '';
+  const shown = statusOf(p);
+  const status = shown === 'soon' ? `<span class="c-badge c-badge--soon">${esc(STR.soon)}</span>`
+    : shown === 'sold' ? `<span class="c-badge c-badge--sold">${esc(STR.sold)}</span>` : '';
+  const buyable = shown === 'live' && availableHere(p);
   const related = byNiche(p.niche).filter((x) => x.id !== p.id).slice(0, 3);
   return `
 <section class="s-product" aria-labelledby="product-name">
@@ -122,7 +192,7 @@ function pageHTML(p) {
             <div class="s-stage__ring"></div>
             <div class="s-stage__word">${esc(nicheLabel(p.niche))}</div>
           </div>
-          <div class="s-stage__tilt" data-stage-tilt><div class="s-stage__float">${artFor(p)}</div></div>
+          <div class="s-stage__tilt" data-stage-tilt><div class="s-stage__float">${artFor(p)}<span class="k-preview" data-perso-preview data-art="${esc(p.art)}" aria-hidden="true" translate="no" dir="auto" hidden></span></div></div>
           <div class="s-stage__glare" aria-hidden="true"></div>
           ${status ? `<div class="s-stage__tags">${status}</div>` : ''}
           <span class="s-stage__hint" aria-hidden="true">${esc(STR.hint)}</span>
@@ -138,7 +208,7 @@ function pageHTML(p) {
           <span class="s-price__num" data-price translate="no">${esc(formatPrice(p.price, p.currency))}</span>
           ${p.sample ? `<span class="c-badge c-badge--sample">${esc(STR.sample)}</span>` : ''}
           ${status}
-          ${p.sample ? `<p class="s-product__price-note">${esc(STR.priceNote)}</p>` : ''}
+          ${p.sample ? `<p class="s-product__price-note">${esc(STR.priceNote)}</p>` : `<p class="s-product__price-note">${esc(STR.priceNoteOn)}</p>`}
         </div>
         <div data-reveal="up" data-delay="0.3">${buyHTML(p)}</div>
         <div class="s-product__desc" data-reveal="up">
@@ -163,11 +233,11 @@ ${related.length ? `
     <div class="c-grid c-grid--products s-related__grid" data-related data-stagger="0.08">${related.map((x) => cardHTML(x, { scope: 'rel' })).join('')}</div>
   </div>
 </section>` : ''}
-${p.status === 'live' ? `
+${buyable ? `
 <div class="s-bar" data-bar>
   <div class="s-bar__text">
     <span class="s-bar__name" translate="no">${esc(p.name)}</span>
-    <span class="s-bar__price"><span data-price translate="no">${esc(formatPrice(p.price, p.currency))}</span><span class="c-badge c-badge--sample">${esc(STR.sample)}</span></span>
+    <span class="s-bar__price"><span data-price translate="no">${esc(formatPrice(p.price, p.currency))}</span>${p.sample ? `<span class="c-badge c-badge--sample">${esc(STR.sample)}</span>` : ''}</span>
   </div>
   <button type="button" class="c-btn c-btn--primary" data-bar-add>${esc(STR.addBar)}</button>
 </div>` : ''}`;
@@ -226,13 +296,36 @@ function bindBuy(host, p, keep = null) {
   const qtyButtons = Array.from(form.querySelectorAll('[data-qty]'));
   const priceSlots = Array.from(host.querySelectorAll('[data-price]'));
   const groups = Array.from(form.querySelectorAll('[data-option]'));
+  const persoFields = Array.from(form.querySelectorAll('[data-perso]'));
+  const preview = host.querySelector('[data-perso-preview]');
+  const perso = {};
+  const readPerso = () => { persoFields.forEach((f) => { perso[f.dataset.perso] = f.querySelector('input').value; }); return perso; };
+  const persoError = (field, text) => {
+    const input = field.querySelector('input');
+    field.classList.toggle('is-invalid', Boolean(text));
+    field.querySelector('.c-field__error').textContent = text || '';
+    if (text) input.setAttribute('aria-invalid', 'true'); else input.removeAttribute('aria-invalid');
+  };
+  const paintPerso = () => {
+    persoFields.forEach((f) => {
+      const input = f.querySelector('input');
+      f.querySelector('[data-perso-count]').textContent = `${Array.from(input.value).length}/${input.maxLength}`;
+    });
+    // the first filled field is drawn on the piece
+    if (preview) {
+      const text = persoFields.map((f) => f.querySelector('input').value.replace(/\s+/g, ' ').trim()).find(Boolean) || '';
+      preview.textContent = text;
+      preview.hidden = !text;
+      preview.style.setProperty('--len', String(Math.max(4, Array.from(text).length)));
+    }
+  };
 
   const setError = (group, text) => {
     group.classList.toggle('is-invalid', Boolean(text));
     group.querySelector('.c-field__error').textContent = text || '';
   };
   const paintPrice = () => {
-    const text = formatPrice(priceOf(p, chosen), p.currency);
+    const text = formatPrice(priceOf(p, chosen, p.currency, validatePersonalisation(p, readPerso()).values), p.currency);
     priceSlots.forEach((n) => { n.textContent = text; });
   };
   const paintQty = () => {
@@ -248,16 +341,26 @@ function bindBuy(host, p, keep = null) {
       if (input) { input.checked = true; g.querySelector('[data-chosen]').textContent = valueLabel(want); }
     });
     qty = Math.max(cart.MIN_QTY, Math.min(cart.MAX_QTY, Number(keep.qty) || 1));
+    persoFields.forEach((f) => { const v = keep.perso && keep.perso[f.dataset.perso]; if (v) f.querySelector('input').value = v; });
   }
   // every group starts on its default, so "add to bag" works on the first tap
   groups.forEach((g) => {
     const on = g.querySelector('input:checked');
     if (on) chosen[g.dataset.option] = on.value;
   });
+  paintPerso();
   paintPrice();
   paintQty();
 
+  form.addEventListener('input', (e) => {
+    const field = e.target.closest('[data-perso]');
+    if (!field) return;
+    persoError(field, '');
+    paintPerso();
+    paintPrice();
+  });
   form.addEventListener('change', (e) => {
+    if (e.target.closest('[data-country-select]')) { commerce.setCountry(e.target.value); return; }
     const group = e.target.closest('[data-option]');
     if (!group) return;
     chosen[group.dataset.option] = e.target.value;
@@ -282,7 +385,20 @@ function bindBuy(host, p, keep = null) {
       if (first) first.focus({ preventScroll: true });
       return;
     }
-    cart.add(p.id, qty, chosen); // the drawer opens itself and announces the change
+    // personalisation: same rules as the server (length, allowed characters, required)
+    const checked = validatePersonalisation(p, readPerso());
+    const fieldsByKey = new Map(personalisationOf(p).map((f) => [f.key, f]));
+    persoFields.forEach((f) => {
+      const kind = checked.errors[f.dataset.perso];
+      persoError(f, kind ? STR.persoErr(kind, personalisationLabel(f.dataset.perso), (fieldsByKey.get(f.dataset.perso) || {}).maxLength || '') : '');
+    });
+    if (!checked.ok) {
+      const bad = persoFields.find((f) => checked.errors[f.dataset.perso]);
+      bad.scrollIntoView({ block: 'center', behavior: 'auto' });
+      bad.querySelector('input').focus({ preventScroll: true });
+      return;
+    }
+    cart.add(p.id, qty, chosen, checked.values); // the drawer opens itself and announces the change
   }
   form.addEventListener('submit', (e) => { e.preventDefault(); addNow(); });
 
@@ -306,7 +422,7 @@ function bindBuy(host, p, keep = null) {
     if (footer) io.observe(footer);
     paint();
   }
-  return { state: () => ({ chosen: { ...chosen }, qty }), destroy: () => { if (io) io.disconnect(); } };
+  return { state: () => ({ chosen: { ...chosen }, qty, perso: { ...readPerso() } }), destroy: () => { if (io) io.disconnect(); } };
 }
 
 function init(ctx) {
@@ -325,7 +441,7 @@ function init(ctx) {
     }
     document.title = STR.pageTitle(p.name);
     const meta = document.querySelector('meta[name="description"]');
-    if (meta) meta.setAttribute('content', `${p.name}: ${p.pitch} ${STR.honest}`);
+    if (meta) meta.setAttribute('content', `${p.name}: ${p.pitch} ${STR.honest()}`);
     host.innerHTML = pageHTML(p);
     bindStage(host, ctx);
     buy = bindBuy(host, p, keep);
@@ -337,11 +453,18 @@ function init(ctx) {
   draw(null);
 
   // language change: draw the page again in the new language, keeping options and quantity
-  document.addEventListener('tcd:lang', () => {
+  const redraw = () => {
     const keep = buy ? buy.state() : null;
     if (buy) buy.destroy();
     buy = null;
     draw(keep);
+  };
+  document.addEventListener('tcd:lang', redraw);
+  // another delivery country (or the commerce switch): other currency, other availability
+  document.addEventListener('tcd:market', redraw);
+  // the "not available here" box has its own country select (no buy form to listen on)
+  host.addEventListener('change', (e) => {
+    if (e.target.closest('[data-country-select]') && !e.target.closest('form[data-buy]')) commerce.setCountry(e.target.value);
   });
 }
 

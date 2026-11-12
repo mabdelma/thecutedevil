@@ -1,0 +1,31 @@
+{
+  "_readme": "Owner-editable tax DISPLAY rates (basis points: 2100 = 21%). included=true: the shop price already contains the tax and the tax line is only shown and recorded. included=false: tax is added on top (rate 0 in v1). These are starting values, NOT tax advice: confirm every rate, and where you must register, with your adviser before live mode (COMMERCE_ARCH.md section h).",
+  "version": 1,
+  "notices": { "duties": "checkout.notice.dutiesMayApply" },
+  "countries": {
+    "AT": { "included": true, "rateBp": 2000 }, "BE": { "included": true, "rateBp": 2100 },
+    "BG": { "included": true, "rateBp": 2000 }, "HR": { "included": true, "rateBp": 2500 },
+    "CY": { "included": true, "rateBp": 1900 }, "CZ": { "included": true, "rateBp": 2100 },
+    "DK": { "included": true, "rateBp": 2500 }, "EE": { "included": true, "rateBp": 2400 },
+    "FI": { "included": true, "rateBp": 2550 }, "FR": { "included": true, "rateBp": 2000 },
+    "DE": { "included": true, "rateBp": 1900 }, "GR": { "included": true, "rateBp": 2400 },
+    "HU": { "included": true, "rateBp": 2700 }, "IE": { "included": true, "rateBp": 2300 },
+    "IT": { "included": true, "rateBp": 2200 }, "LV": { "included": true, "rateBp": 2100 },
+    "LT": { "included": true, "rateBp": 2100 }, "LU": { "included": true, "rateBp": 1700 },
+    "MT": { "included": true, "rateBp": 1800 }, "NL": { "included": true, "rateBp": 2100 },
+    "PL": { "included": true, "rateBp": 2300 }, "PT": { "included": true, "rateBp": 2300 },
+    "RO": { "included": true, "rateBp": 2100 }, "SK": { "included": true, "rateBp": 2300 },
+    "SI": { "included": true, "rateBp": 2200 }, "ES": { "included": true, "rateBp": 2100 },
+    "SE": { "included": true, "rateBp": 2500 },
+    "GB": { "included": true, "rateBp": 2000 },
+    "AE": { "included": true, "rateBp": 500 },
+    "SA": { "included": true, "rateBp": 1500 },
+    "EG": { "included": true, "rateBp": 1400 },
+    "CA": { "included": false, "rateBp": 0, "duties": true },
+    "US": { "included": false, "rateBp": 0, "duties": true },
+    "KW": { "included": true, "rateBp": 0, "duties": true },
+    "QA": { "included": true, "rateBp": 0, "duties": true },
+    "BH": { "included": true, "rateBp": 0, "duties": true },
+    "OM": { "included": true, "rateBp": 0, "duties": true }
+  }
+}

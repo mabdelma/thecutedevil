@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title data-i18n="cookies.meta.title">Cookies and storage · The Cute Devil</title>
-<meta name="description" content="Draft cookie notice for The Cute Devil: the site sets no tracking cookies and saves only your colour theme, language and bag in your browser.">
+<meta name="description" content="Draft cookie notice for The Cute Devil: the site sets no tracking cookies and saves only a few functional items in your browser, such as your colour theme, language, bag and delivery country.">
 <meta name="author" content="Mohamed Khedr Mohamed Abdelmaged">
 <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
 <link rel="manifest" href="/manifest.webmanifest">
@@ -36,7 +36,7 @@
           <li><a class="c-toc__link" href="#what-is-stored">What is stored</a></li>
           <li><a class="c-toc__link" href="#what-is-not-stored">What is not stored</a></li>
           <li><a class="c-toc__link" href="#clear">How to clear it</a></li>
-          <li><a class="c-toc__link" href="#whatsapp">When you leave for WhatsApp</a></li>
+          <li><a class="c-toc__link" href="#whatsapp">When you leave for the payment page or WhatsApp</a></li>
           <li><a class="c-toc__link" href="#if-this-changes">If this changes</a></li>
           <li><a class="c-toc__link" href="#contact">Contact</a></li>
         </ol>
@@ -51,40 +51,55 @@
       <section class="c-prose__section" id="short-version" aria-labelledby="h-short-version">
         <h2 id="h-short-version">The short version <a class="c-anchor" href="#short-version" aria-label="Link to this section: The short version">#</a></h2>
         <ul>
-          <li>This website sets no tracking cookies and no advertising cookies.</li>
-          <li>It loads no third-party scripts, analytics, pixels or embedded content.</li>
-          <li>It saves three functional items in your browser&rsquo;s local storage: your colour theme, your language and your bag.</li>
-          <li>All three stay on your device. They are never sent to us or to anyone else.</li>
+        <li>This website sets no cookies of its own: no tracking cookies and no advertising cookies.</li>
+        <li>It loads no third-party scripts, analytics, pixels or embedded content.</li>
+        <li>It saves a few functional items in your browser&rsquo;s storage: your colour theme, your language, your bag and, where online checkout is available, your delivery country and a reference to your last online order.</li>
+        <li>These items stay on your device and are not used to track you. The bag and the delivery country become part of an order only when you place one.</li>
         </ul>
       </section>
       <section class="c-prose__section" id="what-is-stored" aria-labelledby="h-what-is-stored">
         <h2 id="h-what-is-stored">What is stored <a class="c-anchor" href="#what-is-stored" aria-label="Link to this section: What is stored">#</a></h2>
         <p>Local storage is a small space your browser keeps for each website. It works like a notepad on your device. Unlike a cookie, its content is not sent along with each page request.</p>
         <div class="c-table" role="region" aria-label="Items stored in your browser" tabindex="0" data-lenis-prevent>
-          <table>
-            <thead><tr><th scope="col">Key</th><th scope="col">What it holds</th><th scope="col">Why</th><th scope="col">How long</th></tr></thead>
-            <tbody>
-            <tr><th scope="row"><code>tcd:theme</code></th><td>The colour theme you picked (cream, red, purple or blue).</td><td>So the site keeps your chosen look on your next visit.</td><td>Until you clear it or pick another theme.</td></tr>
-            <tr><th scope="row"><code>tcd:lang</code></th><td>The language you chose for the site.</td><td>So the site opens in your language on your next visit.</td><td>Until you clear it or pick another language.</td></tr>
-            <tr><th scope="row"><code>tcd:cart</code></th><td>The items in your bag: product, options and quantity. No prices, no personal details.</td><td>So your bag is still there when you come back or open another page.</td><td>Until you empty the bag or clear it.</td></tr>
-            </tbody>
-          </table>
+        <table>
+        <thead><tr><th scope="col">Key</th><th scope="col">What it holds</th><th scope="col">Why</th><th scope="col">How long</th></tr></thead>
+        <tbody>
+        <tr><th scope="row"><code>tcd:theme</code></th><td>The colour theme you picked (cream, red, purple or blue).</td><td>So the site keeps your chosen look on your next visit.</td><td>Until you clear it or pick another theme.</td></tr>
+        <tr><th scope="row"><code>tcd:lang</code></th><td>The language you chose for the site.</td><td>So the site opens in your language on your next visit.</td><td>Until you clear it or pick another language.</td></tr>
+        <tr><th scope="row"><code>tcd:cart</code></th><td>The items in your bag: product, options, quantity and any personalisation text. No prices, no contact details.</td><td>So your bag is still there when you come back or open another page.</td><td>Until you empty the bag, complete an order or clear it.</td></tr>
+        <tr><th scope="row"><code>tcd:country</code></th><td>The delivery country you chose (a two-letter country code). Saved only where online checkout is available.</td><td>So prices are shown in the right currency and the checkout starts with your country.</td><td>Until you clear it or pick another country.</td></tr>
+        <tr><th scope="row"><code>tcd:lastOrder</code></th><td>The number of the last order you placed online from this browser and the private code that opens its status page. Saved only after an online order.</td><td>So the order page can show your order when you return from the payment page.</td><td>Until you clear it or place another order.</td></tr>
+        </tbody>
+        </table>
         </div>
-        <p>These three items exist only to make the site work the way you expect, so the site does not show a consent banner for them. Whether that is the right approach will be confirmed in the legal review.</p>
+        <p>The checkout also uses <em>session</em> storage, which your browser empties when you close the tab:</p>
+        <div class="c-table" role="region" aria-label="Items kept until you close the tab" tabindex="0" data-lenis-prevent>
+        <table>
+        <thead><tr><th scope="col">Key</th><th scope="col">What it holds</th><th scope="col">Why</th><th scope="col">How long</th></tr></thead>
+        <tbody>
+        <tr><th scope="row"><code>tcd:checkout</code></th><td>What you typed in the online checkout form: name, e-mail, phone, address, note and delivery option.</td><td>So nothing is lost if you reload the page or come back from the payment page without paying.</td><td>Until your order is confirmed or you close the tab.</td></tr>
+        <tr><th scope="row"><code>tcd:checkoutId</code></th><td>A random number for the current checkout attempt.</td><td>So pressing the pay button twice cannot create two orders.</td><td>Until your order is confirmed or you close the tab.</td></tr>
+        <tr><th scope="row"><code>tcd:config</code></th><td>A copy of the shop&rsquo;s public settings (whether online checkout is on and for which countries). Nothing about you.</td><td>So prices appear at once on the next page.</td><td>A few minutes, or until you close the tab.</td></tr>
+        <tr><th scope="row"><code>tcd:wipe</code></th><td>A one-character marker for the animation between two pages.</td><td>So the page transition finishes on the next page.</td><td>Removed as soon as the next page opens.</td></tr>
+        </tbody>
+        </table>
+        </div>
+        <p>These items exist only to make the site work the way you expect, so the site does not show a consent banner for them. Whether that is the right approach will be confirmed in the legal review.</p>
       </section>
       <section class="c-prose__section" id="what-is-not-stored" aria-labelledby="h-what-is-not-stored">
         <h2 id="h-what-is-not-stored">What is not stored <a class="c-anchor" href="#what-is-not-stored" aria-label="Link to this section: What is not stored">#</a></h2>
         <ul>
-          <li>No account, password or login session: the site has no accounts.</li>
-          <li>No payment details: the site takes no payment.</li>
-          <li>No name, phone number or address. What you type in the checkout or the contact form is used once to compose a WhatsApp message and is not saved by the site.</li>
-          <li>No identifier that could recognise you across visits or across other websites.</li>
+        <li>No account, password or login session: the site has no accounts.</li>
+        <li>No payment details. When you pay online you type them on the payment provider&rsquo;s own page, never on this website, and this website never sees them.</li>
+        <li>No lasting copy of your name, phone number or address in your browser. What you type in the online checkout is kept only for the open tab, as described above; what you type in the WhatsApp checkout or the contact form is used once to compose a WhatsApp message and is not saved by the site.</li>
+        <li>No identifier that could recognise you across visits or across other websites.</li>
         </ul>
+        <p>This page is about what is saved in <em>your browser</em>. When you place an order online, the order itself (contact details, address, items, payment status, tracking) is stored on our server; that is explained in the <a href="privacy.html">privacy policy</a>.</p>
       </section>
       <section class="c-prose__section" id="clear" aria-labelledby="h-clear">
         <h2 id="h-clear">How to clear it <a class="c-anchor" href="#clear" aria-label="Link to this section: How to clear it">#</a></h2>
         <div class="c-clear" data-clear-box>
-          <p>This button removes all three saved items from this browser on this device. Your bag will be emptied, the site will go back to its default cream look, and your language choice will be forgotten.</p>
+          <p>This button removes every item listed above from this browser on this device. Your bag will be emptied, the site will go back to its default cream look, and your language choice, your delivery country and the reference to your last online order will be forgotten. It does not delete an order you have placed: that is stored on our server, and you can still open it with the link in your order e-mail.</p>
           <button type="button" class="c-btn c-btn--contrast" data-clear-storage>clear my saved data on this device</button>
           <p class="c-clear__status" data-clear-status role="status" aria-live="polite"></p>
           <noscript><p class="u-small u-muted">This button needs JavaScript. Without it, use your browser settings as described below.</p></noscript>
@@ -94,15 +109,16 @@
           <li>open your browser&rsquo;s settings, find the section for site data or browsing data, and remove the data stored for this website;</li>
           <li>or browse in a private window, where saved items disappear when you close it.</li>
         </ul>
-        <p>If your browser blocks local storage, the site still works. It simply will not remember your theme or your bag between pages.</p>
+        <p>If your browser blocks local storage, the site still works. It simply will not remember your theme, your bag or your delivery country between pages.</p>
       </section>
       <section class="c-prose__section" id="whatsapp" aria-labelledby="h-whatsapp">
-        <h2 id="h-whatsapp">When you leave for WhatsApp <a class="c-anchor" href="#whatsapp" aria-label="Link to this section: When you leave for WhatsApp">#</a></h2>
-        <p>Order and contact buttons open WhatsApp, which is operated by a third party. Once you are there, that service&rsquo;s own cookie and privacy rules apply, not this notice.</p>
+        <h2 id="h-whatsapp">When you leave for the payment page or WhatsApp <a class="c-anchor" href="#whatsapp" aria-label="Link to this section: When you leave for the payment page or WhatsApp">#</a></h2>
+        <p>When you pay online, your browser leaves this website for a payment page hosted by a payment provider. That page may set its own cookies, for example to keep the payment secure. The provider&rsquo;s own cookie and privacy rules apply there, not this notice. Payment providers: <span class="c-ph">[PAYMENT PROVIDERS]</span>.</p>
+        <p>The same is true for a carrier&rsquo;s tracking page opened from an order e-mail or your order page, and for the order and contact buttons that open WhatsApp: once you are there, that service&rsquo;s own cookie and privacy rules apply.</p>
       </section>
       <section class="c-prose__section" id="if-this-changes" aria-labelledby="h-if-this-changes">
         <h2 id="h-if-this-changes">If this changes <a class="c-anchor" href="#if-this-changes" aria-label="Link to this section: If this changes">#</a></h2>
-        <p>If we ever add analytics, advertising tools, embedded media or online payment, this page will be updated first and, where consent is needed, you will be asked before anything is stored.</p>
+        <p>If we ever add analytics, advertising tools or embedded media, this page will be updated first and, where consent is needed, you will be asked before anything is stored.</p>
       </section>
       <section class="c-prose__section" id="contact" aria-labelledby="h-contact">
         <h2 id="h-contact">Contact <a class="c-anchor" href="#contact" aria-label="Link to this section: Contact">#</a></h2>

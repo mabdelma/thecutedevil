@@ -1,0 +1,87 @@
+{
+  "_readme": [
+    "Owner-editable routing table: product category x destination region -> ordered supplier candidates.",
+    "Format and precedence: web/COMMERCE_ARCH.md section e. Edit, redeploy, done. No code change is needed.",
+    "candidates: tried in order. An inner list [\"a\", \"b\"] is a tier of equals: the cheaper landed cost wins, then the faster one.",
+    "An EMPTY list means: not sold in that region. \"manual\" means: sell it and let a person place the supplier order by hand.",
+    "Source: the routing table of the supply study (reports, section 'jadwal al-tawjih'). Only suppliers with an adapter are listed (Printful, Printify, Gelato, Printlet); Prodigi, Contrado, Art of Where and Teelaunch are left out.",
+    "Every cell the study marks as unconfirmed, 'test order first' or 'after catalogue check' is EMPTY on purpose: all of GCC, most of AE, drinkware and wall art in EG, stationery and engraved in EU and UK. Add the supplier here after a successful test order.",
+    "AE apparel and phone cases: the study's first choice (Gelato) is unconfirmed and 'Printful global' is only a last resort with possible duties at the door, so the cell stays empty until the owner decides.",
+    "blocked: categories that are never sold online (perfume and electronics are deferred by the study).",
+    "costFx: rough conversion to EUR, used ONLY to compare supplier costs with each other. Never used for customer prices.",
+    "In mock mode (COMMERCE_MODE=mock) the mock supplier stands in for every supplier named here."
+  ],
+  "version": 1,
+  "costFx": { "EUR": 1, "USD": 0.92, "GBP": 1.17, "CAD": 0.67, "AED": 0.25, "SAR": 0.245, "EGP": 0.019 },
+  "blocked": [
+    { "category": "fragrance", "region": "*" },
+    { "category": "electronics", "region": "*" }
+  ],
+  "rules": [
+    { "category": "apparel", "region": "EU", "candidates": [["printful", "gelato"], "printify"] },
+    { "category": "apparel", "region": "UK", "candidates": ["printful", "printify"] },
+    { "category": "apparel", "region": "CA", "candidates": ["printful", "printify", "gelato"] },
+    { "category": "apparel", "region": "US", "candidates": ["printful", "printify", "gelato"] },
+    { "category": "apparel", "region": "AE", "candidates": [] },
+    { "category": "apparel", "region": "GCC", "candidates": [] },
+    { "category": "apparel", "region": "EG", "candidates": ["printlet"] },
+
+    { "category": "headwear", "region": "EU", "candidates": ["printful", "printify"] },
+    { "category": "headwear", "region": "UK", "candidates": ["printful"] },
+    { "category": "headwear", "region": "CA", "candidates": ["printful", "printify"] },
+    { "category": "headwear", "region": "US", "candidates": ["printful", "printify"] },
+    { "category": "headwear", "region": "AE", "candidates": [] },
+    { "category": "headwear", "region": "GCC", "candidates": [] },
+    { "category": "headwear", "region": "EG", "candidates": ["printlet"] },
+
+    { "category": "drinkware", "region": "EU", "candidates": ["printful", "gelato", "printify"] },
+    { "category": "drinkware", "region": "UK", "candidates": ["printful", "printify"] },
+    { "category": "drinkware", "region": "CA", "candidates": ["printify", "printful"] },
+    { "category": "drinkware", "region": "US", "candidates": ["printful", "printify"] },
+    { "category": "drinkware", "region": "AE", "candidates": [] },
+    { "category": "drinkware", "region": "GCC", "candidates": [] },
+    { "category": "drinkware", "region": "EG", "candidates": [] },
+
+    { "category": "phone_case", "region": "EU", "candidates": ["printful", "gelato"] },
+    { "category": "phone_case", "region": "UK", "candidates": ["printful"] },
+    { "category": "phone_case", "region": "CA", "candidates": ["printful", "printify"] },
+    { "category": "phone_case", "region": "US", "candidates": ["printful", "printify"] },
+    { "category": "phone_case", "region": "AE", "candidates": [] },
+    { "category": "phone_case", "region": "GCC", "candidates": [] },
+    { "category": "phone_case", "region": "EG", "candidates": ["printlet"] },
+
+    { "category": "wall_art", "region": "EU", "candidates": ["gelato", "printful"] },
+    { "category": "wall_art", "region": "UK", "candidates": ["gelato"] },
+    { "category": "wall_art", "region": "CA", "candidates": ["gelato"] },
+    { "category": "wall_art", "region": "US", "candidates": ["gelato", "printful"] },
+    { "category": "wall_art", "region": "AE", "candidates": ["gelato"] },
+    { "category": "wall_art", "region": "GCC", "candidates": [] },
+    { "category": "wall_art", "region": "EG", "candidates": [] },
+
+    { "category": "tote", "region": "EU", "candidates": ["printful", "printify"] },
+    { "category": "tote", "region": "UK", "candidates": ["printful"] },
+    { "category": "tote", "region": "CA", "candidates": ["printful", "printify"] },
+    { "category": "tote", "region": "US", "candidates": ["printful", "printify"] },
+    { "category": "tote", "region": "AE", "candidates": [] },
+    { "category": "tote", "region": "GCC", "candidates": [] },
+    { "category": "tote", "region": "EG", "candidates": ["printlet"] },
+
+    { "category": "stationery", "region": "EU", "candidates": [] },
+    { "category": "stationery", "region": "UK", "candidates": [] },
+    { "category": "stationery", "region": "CA", "candidates": ["printify"] },
+    { "category": "stationery", "region": "US", "candidates": ["printify", "printful"] },
+    { "category": "stationery", "region": "AE", "candidates": [] },
+    { "category": "stationery", "region": "GCC", "candidates": [] },
+    { "category": "stationery", "region": "EG", "candidates": ["printlet"] },
+
+    { "category": "engraved", "region": "EU", "candidates": [] },
+    { "category": "engraved", "region": "UK", "candidates": [] },
+    { "category": "engraved", "region": "CA", "candidates": ["printify"] },
+    { "category": "engraved", "region": "US", "candidates": ["printify"] },
+    { "category": "engraved", "region": "AE", "candidates": [] },
+    { "category": "engraved", "region": "GCC", "candidates": [] },
+    { "category": "engraved", "region": "EG", "candidates": [] },
+
+    { "category": "*", "region": "*", "candidates": [] }
+  ]
+}

@@ -2,9 +2,10 @@
 // Also exports the product card so product.html can show related pieces.
 import { ready } from '../app.js';
 import { scan, refresh } from '../motion.js';
-import { products, byNiche, NICHES, formatPrice, artFor, nicheLabel, optionLabel } from '../products.js';
-import { t, tn, strings, getLang } from '../i18n.js';
+import { products, byNiche, NICHES, formatPrice, artFor, nicheLabel, optionLabel, statusOf, availableHere, personalisationOf } from '../products.js';
+import { t, tn, strings, getLang, apply } from '../i18n.js';
 import * as cart from '../cart.js';
+import * as commerce from '../commerce.js';
 
 const cap = (word) => { const w = String(word); return w ? w[0].toLocaleUpperCase(getLang()) + w.slice(1) : w; };
 const STR = strings({
@@ -15,6 +16,8 @@ const STR = strings({
   addLabel: (name) => t('shop.card.addLabel', { name }),
   choose: (option) => t('shop.card.choose', { option }),
   look: 'shop.card.look',
+  notHere: 'shop.card.notHere',
+  personalise: 'shop.card.personalise',
   line: (niche) => t(`shop.line.${niche}`),
   status: (n, niche) => (niche === 'all' ? tn('shop.status.all', n) : tn('shop.status.niche', n, { niche: nicheLabel(niche) })),
   title: (niche) => (niche === 'all' ? t('shop.meta.title') : t('shop.meta.titleNiche', { niche: cap(nicheLabel(niche)) })),
@@ -27,14 +30,20 @@ const ICON_ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" s
 /** One product card. `scope` keeps SVG gradient ids unique when the art is on the page twice. */
 export function cardHTML(p, { scope = '', level = 3 } = {}) {
   const href = `product.html?id=${encodeURIComponent(p.id)}`;
-  const quick = p.status === 'live' && !(p.options && p.options.length);
-  const badge = p.status === 'soon' ? `<span class="c-badge c-badge--soon">${esc(STR.soon)}</span>`
-    : p.status === 'sold' ? `<span class="c-badge c-badge--sold">${esc(STR.sold)}</span>` : '';
+  // with commerce on, a piece that is not sold online shows as "soon"; one that does not ship to the chosen country says so
+  const status = statusOf(p);
+  const here = availableHere(p);
+  const perso = personalisationOf(p).length > 0;
+  const quick = status === 'live' && here && !perso && !(p.options && p.options.length);
+  const badge = status === 'soon' ? `<span class="c-badge c-badge--soon">${esc(STR.soon)}</span>`
+    : status === 'sold' ? `<span class="c-badge c-badge--sold">${esc(STR.sold)}</span>`
+      : !here ? `<span class="c-badge c-badge--sold">${esc(STR.notHere)}</span>` : '';
   let more = '';
-  if (p.status === 'live' && !quick) more = STR.choose(optionLabel(p.options[0].name));
-  else if (p.status !== 'live') more = STR.look;
+  if (status !== 'live' || !here) more = STR.look;
+  else if (p.options && p.options.length) more = STR.choose(optionLabel(p.options[0].name));
+  else if (perso) more = STR.personalise;
   return `
-<article class="c-card s-card s-card--${p.status}" data-devil data-tilt="6" data-niche="${p.niche}" data-id="${esc(p.id)}">
+<article class="c-card s-card s-card--${status === 'live' && !here ? 'sold' : status}" data-devil data-tilt="6" data-niche="${p.niche}" data-id="${esc(p.id)}">
   <div class="c-card__media">
     ${artFor(p, scope)}
     ${badge ? `<div class="c-card__badges">${badge}</div>` : ''}
@@ -65,6 +74,29 @@ export function bindQuickAdd(root) {
       window.setTimeout(() => card.classList.remove('is-added'), 1200);
     }
   });
+}
+
+/* ---------------------------------------------------------------- copy that depends on the commerce switch */
+// shop.html is written for the WhatsApp flow ("sample prices", "order on whatsapp"). With commerce on the
+// same nodes read their commerce-on keys; with commerce off they go back to the keys in the HTML.
+const COPY_ON = {
+  'shop.band.item1': 'shop.on.band1',
+  'shop.band.item2': 'shop.on.band2',
+  'shop.band.item3': 'shop.on.band3',
+  'shop.how.title': 'shop.on.how.title',
+  'shop.how.text': 'shop.on.how.text',
+};
+function paintCopy() {
+  const on = commerce.isOn();
+  document.querySelectorAll('main [data-i18n], main [data-i18n-off]').forEach((n) => {
+    const off = n.dataset.i18nOff || n.getAttribute('data-i18n');
+    if (!COPY_ON[off]) return;
+    n.dataset.i18nOff = off;
+    const want = on ? COPY_ON[off] : off;
+    if (n.getAttribute('data-i18n') !== want) { n.setAttribute('data-i18n', want); apply(n); }
+  });
+  // "Sample prices are placeholders for now."
+  document.querySelectorAll('[data-i18n-html="shop.line.note"]').forEach((n) => { n.hidden = on; });
 }
 
 /* ---------------------------------------------------------------- page */
@@ -181,18 +213,22 @@ function init({ gsap, reduced }) {
   window.addEventListener('popstate', () => setNiche(nicheFromUrl()));
 
   paintChrome(current, false);
+  paintCopy();
   bindQuickAdd(grid);
   scan(grid);
   refresh();
 
   // language change: the cards are drawn again in the new language, the filter stays where it is
-  document.addEventListener('tcd:lang', () => {
+  const redraw = () => {
     if (animate) cards.forEach((card) => gsap.killTweensOf(card));
     draw();
     paintChrome(current, false);
     scan(grid);
     refresh();
-  });
+  };
+  document.addEventListener('tcd:lang', redraw);
+  // another delivery country (or the commerce switch itself): other currency, other availability
+  document.addEventListener('tcd:market', () => { paintCopy(); redraw(); });
 }
 
 if (document.body.dataset.page === 'shop') {

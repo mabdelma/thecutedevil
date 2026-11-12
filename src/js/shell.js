@@ -3,7 +3,8 @@
 // (src/i18n/*.json): the templates print t(key) AND mark the node with data-i18n, so a language
 // change re-translates the shell in place without rebuilding it or losing its event listeners.
 import { logoMark } from './logo.js';
-import { t, tn, LANGS, getLang, setLang } from './i18n.js';
+import { t, tn, LANGS, getLang, setLang, apply } from './i18n.js';
+import * as commerce from './commerce.js';
 
 /** The English tagline (kept for older imports). The shell itself prints t('brand.tagline'). */
 export const TAGLINE = 'Charming outside. Mysterious inside.';
@@ -44,7 +45,7 @@ const LEGAL = [
 ];
 const THEME_KEYS = { cream: 'theme.cream', red: 'theme.red', purple: 'theme.purple', blue: 'theme.blue' };
 
-const PAGE_TO_NAV = { shop: 'shop', product: 'shop', story: 'story', contact: 'contact' };
+const PAGE_TO_NAV = { shop: 'shop', product: 'shop', checkout: 'shop', order: 'shop', story: 'story', contact: 'contact' };
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 /** A translated text node holder: prints the string now and can be re-translated in place later. */
 const tx = (key) => `data-i18n="${key}">${esc(t(key))}`;
@@ -54,6 +55,7 @@ const at = (pairs) => `${pairs.split(';').map((pair) => { const [a, k] = pair.sp
 const ICON_BAG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 8.5h14l-1.1 10.2a2 2 0 0 1-2 1.8H8.1a2 2 0 0 1-2-1.8z"/><path d="M8.5 8.5C7 6.6 7.2 4.3 8.6 3c.1 2 1.2 3.2 2.9 3.6M15.5 8.5c1.5-1.9 1.3-4.2-.1-5.5-.1 2-1.2 3.2-2.9 3.6"/></svg>';
 const ICON_WA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3.5 20.5l1.3-4.7a8.5 8.5 0 1 1 3.4 3.4z"/><path d="M9.2 8.2c-.3 3.4 3.2 6.9 6.6 6.6l.7-1.8-2-1.1-.9.9c-1-.5-1.9-1.4-2.4-2.4l.9-.9-1.1-2z"/></svg>';
 const ICON_GLOBE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.6 2.4 3.9 5.2 3.9 8.5s-1.3 6.1-3.9 8.5c-2.6-2.4-3.9-5.2-3.9-8.5s1.3-6.1 3.9-8.5z"/></svg>';
+const ICON_PIN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 21s-6.5-5.6-6.5-10.5a6.5 6.5 0 0 1 13 0C18.5 15.4 12 21 12 21z"/><circle cx="12" cy="10.5" r="2.3"/></svg>';
 const ICON_CARET = '<svg class="c-lang__caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 10l5 5 5-5"/></svg>';
 
 function switcherHTML() {
@@ -133,7 +135,7 @@ function footerHTML() {
     </div>
     <div class="c-footer__cols">
       <div><h2 class="c-footer__h" ${tx('footer.explore')}</h2><ul class="c-footer__list">${links}</ul></div>
-      <div><h2 class="c-footer__h" ${tx('footer.help')}</h2><ul class="c-footer__list">${list(HELP)}</ul></div>
+      <div><h2 class="c-footer__h" ${tx('footer.help')}</h2><ul class="c-footer__list">${list(HELP)}<li data-commerce-only hidden><a class="c-footer__link" href="order.html" ${tx('footer.link.order')}</a></li></ul></div>
       <div><h2 class="c-footer__h" ${tx('footer.legal')}</h2><ul class="c-footer__list">${list(LEGAL)}</ul></div>
       <div><h2 class="c-footer__h" ${tx('footer.talk')}</h2><ul class="c-footer__list">
         <li><a class="c-footer__link" href="${WHATSAPP_URL}" target="_blank" rel="noopener" data-wa-label><bdi dir="ltr">${esc(FIXED.whatsappNumber)}</bdi></a></li>
@@ -142,6 +144,7 @@ function footerHTML() {
       <div><h2 class="c-footer__h" ${tx('footer.where')}</h2><p class="c-footer__plain"><span ${tx('footer.place1')}</span><br><span ${tx('footer.place2')}</span></p></div>
       <div><h2 class="c-footer__h" ${tx('footer.shade')}</h2>${switcherHTML()}</div>
       <div><h2 class="c-footer__h"><label for="tcd-lang-footer" ${tx('footer.language')}</label></h2>${langSelectHTML('tcd-lang-footer')}</div>
+      <div data-commerce-only hidden><h2 class="c-footer__h"><label for="tcd-country-footer" ${tx('footer.country')}</label></h2><span class="c-langpick">${ICON_PIN}<select class="c-select c-langpick__select" id="tcd-country-footer" data-country-select data-country-footer translate="no"></select></span></div>
     </div>
   </div>
 </div>
@@ -235,6 +238,69 @@ function bindLanguage() {
   });
 
   document.addEventListener('tcd:lang', paint);
+  paint();
+}
+
+/* ---------------------------------------------------------------- delivery country (commerce on only) */
+// The currency follows the country (commerce.js). With commerce off this column and the order link stay hidden.
+// The static pages are written for the WhatsApp flow (commerce off). With commerce on, the nodes below read their
+// commerce-on key instead; with commerce off they go back. Only the key in the markup changes, so a language switch
+// keeps working. (shop.html's own on-page copy is swapped the same way in pages/shop.js.)
+const COPY_ON = {
+  'home.how.word3': 'home.on.how.word3',
+  'home.how.name3': 'home.on.how.name3',
+  'home.how.text3': 'home.on.how.text3',
+  'home.how.text4': 'home.on.how.text4',
+  'home.how.note': 'home.on.how.note',
+  'story.values.text4': 'story.on.values.text4',
+  'shop.meta.description': 'shop.on.meta.description',
+  'product.meta.description': 'product.on.meta.description',
+  'faq.meta.description': 'faq.on.meta.description',
+  'faq.howOrderingWorks.a1': 'faq.on.howOrderingWorks.a1',
+  'faq.howOrderingWorks.a2': 'faq.on.howOrderingWorks.a2',
+  'faq.whyWhatsapp.q': 'faq.on.whyWhatsapp.q',
+  'faq.whyWhatsapp.a1': 'faq.on.whyWhatsapp.a1',
+  'faq.arePricesFinal.a': 'faq.on.arePricesFinal.a',
+  'faq.payment.a1': 'faq.on.payment.a1',
+  'faq.delivery.a1': 'faq.on.delivery.a1',
+};
+const COPY_OFF = Object.fromEntries(Object.entries(COPY_ON).map(([off, on]) => [on, off]));
+function paintCopy(on) {
+  const want = (key) => (on ? COPY_ON[key] : COPY_OFF[key]) || key;
+  ['data-i18n', 'data-i18n-html'].forEach((attr) => {
+    document.querySelectorAll(`[${attr}]`).forEach((n) => {
+      const key = n.getAttribute(attr);
+      if (want(key) !== key) { n.setAttribute(attr, want(key)); apply(n); }
+    });
+  });
+  document.querySelectorAll('[data-i18n-attr]').forEach((n) => {
+    const now = n.getAttribute('data-i18n-attr');
+    const next = now.split(';').map((pair) => { const at = pair.indexOf(':'); return at < 1 ? pair : `${pair.slice(0, at)}:${want(pair.slice(at + 1).trim())}`; }).join(';');
+    if (next !== now) { n.setAttribute('data-i18n-attr', next); apply(n); }
+  });
+}
+
+function bindMarket() {
+  const paint = () => {
+    const on = commerce.isOn();
+    document.querySelectorAll('[data-commerce-only]').forEach((n) => { n.hidden = !on; });
+    document.querySelectorAll('[data-commerce-off]').forEach((n) => { n.hidden = on; });
+    paintCopy(on);
+    document.querySelectorAll('[data-country-footer]').forEach((sel) => {
+      const now = commerce.getCountry();
+      sel.innerHTML = on ? commerce.countryOptions(getLang()).map((c) => `<option value="${c.code}"${c.code === now ? ' selected' : ''}>${esc(c.name)} · ${c.currency}</option>`).join('') : '';
+    });
+  };
+  document.querySelectorAll('[data-country-footer]').forEach((sel) => {
+    sel.addEventListener('change', () => {
+      commerce.setCountry(sel.value);
+      // the home page prints prices once and does not listen for the market: draw it again
+      if (document.body.dataset.page === 'home') window.location.reload();
+    });
+  });
+  document.addEventListener('tcd:market', paint);
+  document.addEventListener('tcd:lang', paint);
+  commerce.settled.then(paint);
   paint();
 }
 
@@ -415,5 +481,6 @@ export function mount(theme) {
 
   if (theme) bindSwitchers(theme);
   bindLanguage();
+  bindMarket();
   bindWhatsAppForms();
 }

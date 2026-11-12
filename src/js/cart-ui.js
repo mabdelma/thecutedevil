@@ -1,10 +1,15 @@
 // The Cute Devil: cart drawer + WhatsApp checkout steps. Owner: shop.
 // Loaded by app.js on EVERY page (also contact and 404, which do not link shop.css),
 // so the drawer brings its own styles with the import below.
+// Commerce switch (commerce.js): OFF → the three WhatsApp steps below, untouched.
+// ON → the bag's main button goes to checkout.html, the delivery country can be changed here, and
+// "order by whatsapp instead" keeps the old steps one tap away.
 import '../css/shop.css';
+import '../css/checkout.css';
 import * as cart from './cart.js';
-import { formatPrice, artFor, optionLabel, valueLabel } from './products.js';
-import { t, tn, strings, apply } from './i18n.js';
+import { formatPrice, artFor, optionLabel, valueLabel, personalisationLabel } from './products.js';
+import { t, tn, strings, apply, getLang } from './i18n.js';
+import * as commerce from './commerce.js';
 import { createOrder, validateCustomer, submitOrder, LIMITS } from './checkout.js';
 
 const STR = strings({
@@ -60,6 +65,15 @@ const STR = strings({
   qtyNow: (name, qty, total) => t('cart.say.qty', { name, qty, total }),
   cleared: 'cart.say.cleared',
   fixForm: 'cart.say.fixForm',
+  // commerce on
+  subtotal: 'cart.subtotal',
+  shippingNote: 'cart.shippingNote',
+  toCheckout: 'cart.toCheckout',
+  whatsappInstead: 'cart.whatsappInstead',
+  deliverTo: 'cart.deliverTo',
+  notOnline: 'cart.notOnline',
+  notServed: (country) => t('cart.notServed', { country }),
+  qtyNowOn: (name, qty, total) => t('cart.say.qtyOn', { name, qty, total }),
 });
 
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -69,6 +83,8 @@ const ICON = {
   plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M6 12h12M12 6v12"/></svg>',
   arrow: '<svg class="c-btn__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
   wa: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3.5 20.5l1.3-4.7a8.5 8.5 0 1 1 3.4 3.4z"/><path d="M9.2 8.2c-.3 3.4 3.2 6.9 6.6 6.6l.7-1.8-2-1.1-.9.9c-1-.5-1.9-1.4-2.4-2.4l.9-.9-1.1-2z"/></svg>',
+  pin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 21s-6.5-5.6-6.5-10.5a6.5 6.5 0 0 1 13 0C18.5 15.4 12 21 12 21z"/><circle cx="12" cy="10.5" r="2.3"/></svg>',
+  lock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="10.5" width="14" height="9.5" rx="2.5"/><path d="M8.5 10.5V8a3.5 3.500 0 0 1 7 0v2.5"/></svg>',
   horns: '<svg viewBox="0 0 64 22" aria-hidden="true" focusable="false"><path d="M6 22C2 12 4 4 10 0c0 9 4 16 12 22z"/><path d="M58 22c4-10 2-18-4-22 0 9-4 16-12 22z"/></svg>',
 };
 
@@ -86,13 +102,27 @@ const el = { root: null, wrap: null, panel: null, title: null, stepLabel: null, 
 
 /* ---------------------------------------------------------------- templates */
 function optionText(line) {
-  return (line.product.options || []).map((o) => `${optionLabel(o.name)} ${valueLabel(line.options[o.name])}`).join(' · ');
+  return (line.product.options || []).map((o) => `${optionLabel(o.name)} ${valueLabel(line.options[o.name])}`)
+    .concat(Object.keys(line.personalisation || {}).map((k) => `${personalisationLabel(k)}: \u2068${line.personalisation[k]}\u2069`))
+    .join(' · ');
+}
+
+/** The delivery-country select of the bag (commerce on). The currency follows the country. */
+function marketHTML() {
+  const now = commerce.getCountry();
+  const options = commerce.countryOptions(getLang()).map((c) => `<option value="${c.code}"${c.code === now ? ' selected' : ''}>${esc(c.name)} · ${c.currency}</option>`).join('');
+  return `
+<div class="k-market">
+  <label class="k-market__k" for="tcd-cart-country">${esc(STR.deliverTo)}</label>
+  <span class="c-langpick k-market__pick">${ICON.pin}<select class="c-select c-langpick__select" id="tcd-cart-country" data-country-select data-fid="country">${options}</select></span>
+  ${commerce.notServedCountry() ? `<p class="k-market__note" role="status">${esc(STR.notServed(commerce.countryName(commerce.notServedCountry(), getLang())))}</p>` : ''}
+</div>`;
 }
 
 function lineHTML(line, i) {
   const p = line.product;
   const href = `product.html?id=${encodeURIComponent(p.id)}`;
-  const meta = [optionText(line), STR.each(formatPrice(line.unit, p.currency))].filter(Boolean).join(' · ');
+  const meta = [optionText(line), STR.each(formatPrice(line.unit, line.currency))].filter(Boolean).join(' · ');
   return `
 <li class="s-line" style="--i:${i}" data-key="${esc(line.key)}">
   <a class="s-line__thumb" href="${href}" tabindex="-1" aria-hidden="true">${artFor(p, `bag${i}`)}</a>
@@ -105,8 +135,9 @@ function lineHTML(line, i) {
         <span class="s-qty__value" aria-hidden="true">${line.qty}</span>
         <button type="button" class="s-qty__btn" data-act="inc" data-fid="inc:${esc(line.key)}" aria-label="${esc(STR.more(p.name))}"${line.qty >= cart.MAX_QTY ? ' disabled' : ''}>${ICON.plus}</button>
       </div>
-      <span class="s-line__total">${esc(formatPrice(line.lineTotal, p.currency))}</span>
+      <span class="s-line__total" translate="no">${esc(formatPrice(line.lineTotal, line.currency))}</span>
     </div>
+    ${commerce.isOn() && !line.buyable ? `<p class="s-line__hint k-line__warn">${esc(STR.notOnline)}</p>` : ''}
     ${line.qty >= cart.MAX_QTY ? `<p class="s-line__hint">${esc(STR.maxHint(cart.MAX_QTY))}</p>` : ''}
   </div>
   <button type="button" class="s-line__remove" data-act="remove" data-fid="rm:${esc(line.key)}" aria-label="${esc(STR.remove(p.name))}">${ICON.close}</button>
@@ -114,8 +145,16 @@ function lineHTML(line, i) {
 }
 
 function totalHTML(lines) {
-  const sum = lines.reduce((s, l) => s + l.lineTotal, 0);
-  const currency = lines[0] ? lines[0].product.currency : 'EUR';
+  const sum = lines.reduce((s, l) => s + (l.lineTotal || 0), 0);
+  const currency = commerce.getCurrency();
+  if (commerce.isOn()) {
+    return `
+<div class="s-cart__total">
+  <span class="s-cart__total-k">${esc(STR.subtotal)}</span>
+  <strong class="s-cart__total-v" translate="no">${esc(formatPrice(sum, currency))}</strong>
+</div>
+<p class="s-cart__honest">${esc(STR.shippingNote)}</p>`;
+  }
   return `
 <div class="s-cart__total">
   <span class="s-cart__total-k">${esc(STR.total)} <span class="c-badge c-badge--sample">${esc(STR.sample)}</span></span>
@@ -159,7 +198,12 @@ const VIEWS = {
     return {
       title: STR.titleBag, step: 1, count: STR.pieces(cart.count()),
       body: `<ul class="s-cart__lines">${lines.map(lineHTML).join('')}</ul>`,
-      foot: `${totalHTML(lines)}
+      foot: commerce.isOn() ? `${marketHTML()}${totalHTML(lines)}
+<a class="c-btn c-btn--primary c-btn--block" href="checkout.html" data-act="checkout" data-fid="checkout">${ICON.lock}${esc(STR.toCheckout)}</a>
+<div class="s-cart__pair k-cart__alt">
+  ${commerce.getConfig().whatsappFallback ? `<button type="button" class="c-btn c-btn--text" data-act="to-details" data-fid="to-details">${ICON.wa}${esc(STR.whatsappInstead)}</button>` : ''}
+  <button type="button" class="c-btn c-btn--text" data-act="close">${esc(STR.keepLooking)}</button>
+</div>` : `${totalHTML(lines)}
 <button type="button" class="c-btn c-btn--primary c-btn--block" data-act="to-details" data-fid="to-details">${ICON.wa}${esc(STR.toDetails)}</button>
 <button type="button" class="c-btn c-btn--text c-btn--block" data-act="close">${esc(STR.keepLooking)}</button>`,
     };
@@ -233,6 +277,7 @@ function render({ focus } = {}) {
   const keep = focus || (active && el.panel.contains(active) && active.dataset ? active.dataset.fid : '');
   const view = (VIEWS[state.step] || VIEWS.bag)();
   el.wrap.dataset.step = state.step;
+  el.wrap.classList.toggle('is-commerce', commerce.isOn());
   el.title.textContent = view.title;
   el.stepLabel.textContent = [STR.stepOf(view.step), view.count].filter(Boolean).join(' · ');
   el.steps.querySelectorAll('[data-step-dot]').forEach((dot, i) => {
@@ -354,6 +399,10 @@ function onClick(e) {
   const line = key ? cart.lines().find((l) => l.key === key) : null;
   switch (act) {
     case 'close': close(); break;
+    case 'checkout':
+      // already on the checkout page: the bag only has to get out of the way
+      if (document.body.dataset.page === 'checkout') { e.preventDefault(); close(); }
+      break;
     case 'inc': if (line) cart.setQty(key, line.qty + 1); break;
     case 'dec': if (line) cart.setQty(key, Math.max(cart.MIN_QTY, line.qty - 1)); break;
     case 'remove':
@@ -403,7 +452,7 @@ function onCart(e) {
   }
   if (d.reason === 'qty') state.order = null;
   render();
-  if (d.reason === 'qty' && line) say(STR.qtyNow(line.product.name, line.qty, formatPrice(cart.total(), line.product.currency)));
+  if (d.reason === 'qty' && line) say((commerce.isOn() ? STR.qtyNowOn : STR.qtyNow)(line.product.name, line.qty, formatPrice(cart.total(), line.currency)));
   if (d.reason === 'remove' && state.removedName) {
     say(STR.removed(state.removedName));
     state.removedName = '';
@@ -488,6 +537,15 @@ function mount() {
   });
   document.addEventListener('keydown', onKey);
   document.addEventListener('tcd:cart', onCart);
+  // commerce: the delivery country can be changed in the bag; prices follow the market
+  el.wrap.addEventListener('change', (e) => {
+    const pick = e.target.closest('[data-country-select]');
+    if (pick) commerce.setCountry(pick.value);
+  });
+  document.addEventListener('tcd:market', () => {
+    if (state.step === 'preview' || state.step === 'sent') { state.order = null; state.step = 'bag'; }
+    render();
+  });
   // language change: the frame is marked with data-i18n, the current step is drawn again
   document.addEventListener('tcd:lang', () => {
     readForm();

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en" class="no-js" data-theme="cream">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-i18n="checkout.meta.title">Checkout · The Cute Devil</title>
+<meta name="description" content="Secure checkout at The Cute Devil. Delivery, shipping and payment on one page." data-i18n-attr="content:checkout.meta.description">
+<meta name="robots" content="noindex">
+<meta name="author" content="Mohamed Khedr Mohamed Abdelmaged">
+<link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
+<script>(function(d){d.classList.remove('no-js');d.classList.add('js');try{var t=localStorage.getItem('tcd:theme');if(t)d.setAttribute('data-theme',t)}catch(e){}try{var L='en zh es fr ar pt ru de ja hi it'.split(' '),s=location.search,q=(s.match(/[?&]lang=([a-zA-Z]{2})/)||[])[1],c=[q],l='en',i,k;try{c.push(localStorage.getItem('tcd:lang'))}catch(e){}c=c.concat(navigator.languages||[navigator.language]);for(i=0;i<c.length;i++){k=String(c[i]||'').toLowerCase().slice(0,2);if(L.indexOf(k)>-1){l=k;break}}d.lang=l;d.dir=l==='ar'?'rtl':'ltr';if(l!=='en'||/[?&]pseudo=1/.test(s)){d.classList.add('i18n-wait');setTimeout(function(){d.classList.remove('i18n-wait')},2500)}}catch(e){}})(document.documentElement)</script>
+<link rel="stylesheet" href="./src/css/tokens.css">
+<link rel="stylesheet" href="./src/css/base.css">
+<link rel="stylesheet" href="./src/css/motion.css">
+<link rel="stylesheet" href="./src/css/shop.css">
+<link rel="stylesheet" href="./src/css/checkout.css">
+</head>
+<body data-page="checkout">
+<a class="u-skip" href="#main" data-i18n="shell.skip">Skip to content</a>
+<header data-shell="header"><a href="index.html">the cute devil</a> <a href="shop.html">shop</a></header>
+<main id="main">
+  <section class="k-page" aria-labelledby="checkout-title">
+    <div class="c-container c-container--wide">
+      <header class="k-head">
+        <p class="c-eyebrow" data-i18n="checkout.eyebrow">secure checkout</p>
+        <h1 class="k-head__title" id="checkout-title" data-i18n-html="checkout.title">almost <span class="u-accent">yours.</span></h1>
+      </header>
+      <noscript>
+        <div class="s-noscript">
+          <h2 class="u-h3">checkout needs JavaScript.</h2>
+          <p class="u-muted">You can still order. Tell us on WhatsApp which piece you want.</p>
+          <a class="c-btn c-btn--primary" href="https://wa.me/34622209935?text=Hi%20The%20Cute%20Devil!%20I%27d%20like%20to%20order." target="_blank" rel="noopener">order on whatsapp</a>
+        </div>
+      </noscript>
+      <div class="k-root" data-checkout aria-live="off">
+        <div class="k-loading" data-k-loading><span class="k-spin" aria-hidden="true"></span><p data-i18n="checkout.loading">Getting your checkout ready…</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+<footer data-shell="footer"></footer>
+<script type="module" src="./src/js/app.js"></script>
+<script type="module" src="./src/js/pages/checkout.js"></script>
+</body>
+</html>

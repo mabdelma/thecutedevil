@@ -8,7 +8,9 @@ const STR = strings({
   clearFailed: 'prose.clearFailed',
 });
 
-const KEYS = ['tcd:theme', 'tcd:cart', 'tcd:lang'];
+const KEYS = ['tcd:theme', 'tcd:cart', 'tcd:lang', 'tcd:country', 'tcd:lastOrder'];
+// sessionStorage (gone when the tab closes anyway): the config cache, the checkout form draft and the checkout attempt id
+const SESSION_KEYS = ['tcd:config', 'tcd:checkout', 'tcd:checkoutId'];
 const DEFAULT_THEME = 'cream';
 const wide = window.matchMedia('(min-width: 64em)');
 
@@ -86,12 +88,14 @@ function initClear() {
     try {
       had = KEYS.some((k) => localStorage.getItem(k) !== null);
     } catch (err) { say(STR.clearFailed, true); return; }
+    try { had = had || ['tcd:checkout', 'tcd:checkoutId'].some((k) => sessionStorage.getItem(k) !== null); } catch (err) { /* private mode */ }
 
     // empty the live cart first so the open page and other tabs follow, then drop the keys
     try { const cart = await import('../cart.js'); cart.clear(); } catch (err) { /* cart module is optional here */ }
     try {
       KEYS.forEach((k) => localStorage.removeItem(k));
     } catch (err) { say(STR.clearFailed, true); return; }
+    try { SESSION_KEYS.forEach((k) => sessionStorage.removeItem(k)); } catch (err) { /* private mode */ }
 
     document.documentElement.setAttribute('data-theme', DEFAULT_THEME);
     document.dispatchEvent(new CustomEvent('tcd:theme', { detail: { theme: DEFAULT_THEME } }));

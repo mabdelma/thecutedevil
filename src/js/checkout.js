@@ -2,6 +2,7 @@
 // v1 has no payment, no stock sync and no order database: an order exists once the customer
 // presses send in WhatsApp. The cart drawer (cart-ui.js) drives the steps and calls this module.
 import { getById, priceOf, formatPrice } from './products.js';
+import { isOn, getCurrency } from './commerce.js';
 import { t, getLang } from './i18n.js';
 
 export const WHATSAPP_NUMBER = '34622209935'; // digits only, country code first
@@ -12,7 +13,7 @@ const MAX_MESSAGE = 1500; // keep the wa.me link comfortably short
 const STR = {
   hello: "Hi The Cute Devil! I'd like to order:",
   sample: '(sample)',
-  total: (amount) => `Estimated total: ${amount} (sample prices, to be confirmed)`,
+  total: (amount) => (isOn() ? `Estimated total: ${amount} (before shipping, to be confirmed)` : `Estimated total: ${amount} (sample prices, to be confirmed)`),
   name: (v) => `Name: ${v}`,
   city: (v) => `City / country: ${v}`,
   note: (v) => `Note: ${v}`,
@@ -59,16 +60,18 @@ export function orderRef(date = new Date()) {
 function describe(items) {
   const rows = [];
   let total = 0;
-  let currency = 'EUR';
+  const currency = getCurrency();
+  // with real prices (commerce on) the "(sample)" mark is dropped; amounts are minor units
+  const mark = isOn() ? '' : ` ${STR.sample}`;
   (items || []).forEach((item) => {
     const product = getById(item.id);
     if (!product) return;
     const qty = Math.max(1, Number(item.qty) || 1);
-    const lineTotal = priceOf(product, item.options) * qty;
-    const variant = (product.options || []).map((o) => item.options && item.options[o.name]).filter(Boolean).join(' / ');
+    const lineTotal = (priceOf(product, item.options, currency, item.personalisation) || 0) * qty;
+    const variant = (product.options || []).map((o) => item.options && item.options[o.name]).filter(Boolean)
+      .concat(Object.keys(item.personalisation || {}).map((k) => `${k}: ${item.personalisation[k]}`)).join(' / ');
     total += lineTotal;
-    currency = product.currency;
-    rows.push([product.name, variant, `× ${qty}`, `${formatPrice(lineTotal, product.currency)} ${STR.sample}`].filter(Boolean).join(' — ').replace(' — ×', ' ×'));
+    rows.push([product.name, variant, `× ${qty}`, `${formatPrice(lineTotal, currency)}${mark}`].filter(Boolean).join(' — ').replace(' — ×', ' ×'));
   });
   return { rows, total, currency };
 }
@@ -159,7 +162,7 @@ export const providers = {
 export function createOrder(items, customer = {}) {
   const ref = customer.ref || orderRef();
   const clean = { name: tidy(customer.name), city: tidy(customer.city), note: tidy(customer.note), ref };
-  const lines = (items || []).map(({ id, qty, options }) => ({ id, qty, options: { ...options } }));
+  const lines = (items || []).map(({ id, qty, options, personalisation }) => ({ id, qty, options: { ...options }, ...(personalisation ? { personalisation: { ...personalisation } } : {}) }));
   const text = buildOrderText(lines, clean);
   return { ref, items: lines, customer: clean, text, url: whatsappUrl(text) };
 }
